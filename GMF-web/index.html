@@ -1,0 +1,1393 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Guatemala Music Festival 2026</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Bricolage+Grotesque:wght@400;600;700;800&family=Space+Mono:ital@0;1&display=swap" rel="stylesheet">
+<style>
+:root {
+  --negro: #060608;
+  --amarillo: #FFE500;
+  --naranja: #FF5C00;
+  --rosa: #FF2D6B;
+  --azul: #00C2FF;
+  --blanco: #FAFAFA;
+  --gris: #1a1a1f;
+}
+
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior: smooth; }
+body {
+  background: var(--negro);
+  color: var(--blanco);
+  font-family: 'Bricolage Grotesque', sans-serif;
+  overflow-x: hidden;
+}
+
+/* ── TICKER TAPE ── */
+.ticker-wrap {
+  background: var(--amarillo);
+  overflow: hidden;
+  padding: 0.55rem 0;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+.ticker-track {
+  display: flex;
+  white-space: nowrap;
+  animation: ticker 22s linear infinite;
+}
+.ticker-track span {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1rem;
+  color: var(--negro);
+  letter-spacing: 0.08em;
+  padding: 0 2.5rem;
+}
+.ticker-track span.sep { color: var(--naranja); }
+@keyframes ticker { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+
+/* ── NAV ── */
+nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem 3rem;
+  position: absolute;
+  width: 100%;
+  z-index: 50;
+  top: 2.4rem;
+}
+.nav-logo {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.5rem;
+  letter-spacing: 0.12em;
+  color: var(--amarillo);
+}
+.nav-right {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+.btn-tickets {
+  background: var(--amarillo);
+  color: var(--negro);
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 0.95rem;
+  letter-spacing: 0.12em;
+  padding: 0.65rem 1.8rem;
+  text-decoration: none;
+  border: none;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.15s;
+  display: inline-block;
+}
+.btn-tickets:hover { background: var(--naranja); transform: scale(1.04); }
+
+/* ── HERO ── */
+.hero {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+  padding: 8rem 2rem 4rem;
+}
+
+/* Fondo de confetti/burbujas animadas */
+.hero-bubbles {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+.bubble {
+  position: absolute;
+  border-radius: 50%;
+  opacity: 0.07;
+  animation: float-up var(--dur) ease-in-out infinite;
+  animation-delay: var(--delay);
+}
+@keyframes float-up {
+  0%   { transform: translateY(110vh) scale(0.8) rotate(0deg); opacity: 0; }
+  10%  { opacity: 0.07; }
+  90%  { opacity: 0.07; }
+  100% { transform: translateY(-20vh) scale(1.1) rotate(360deg); opacity: 0; }
+}
+
+/* Gradiente hero */
+.hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 60% 50% at 30% 60%, rgba(255,92,0,0.22) 0%, transparent 65%),
+    radial-gradient(ellipse 50% 50% at 75% 40%, rgba(255,45,107,0.18) 0%, transparent 65%),
+    radial-gradient(ellipse 40% 40% at 50% 90%, rgba(255,229,0,0.12) 0%, transparent 60%);
+  pointer-events: none;
+}
+
+/* Confetti shapes */
+.confetti-shape {
+  position: absolute;
+  animation: confetti-fall var(--dur) linear infinite var(--delay);
+  pointer-events: none;
+}
+@keyframes confetti-fall {
+  0%   { transform: translateY(-60px) rotate(0deg); opacity: 1; }
+  100% { transform: translateY(110vh) rotate(720deg); opacity: 0.3; }
+}
+
+.hero-eyebrow {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.72rem;
+  letter-spacing: 0.25em;
+  color: var(--amarillo);
+  text-transform: uppercase;
+  margin-bottom: 1.5rem;
+  position: relative;
+  z-index: 2;
+  animation: fadeUp 0.8s ease both;
+}
+
+.hero-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: clamp(5.5rem, 16vw, 16rem);
+  line-height: 0.85;
+  letter-spacing: 0.01em;
+  position: relative;
+  z-index: 2;
+  animation: fadeUp 0.9s ease 0.1s both;
+}
+.hero-title .line1 { color: var(--blanco); display: block; }
+.hero-title .line2 {
+  display: block;
+  color: transparent;
+  -webkit-text-stroke: 2px var(--amarillo);
+}
+.hero-title .line3 { color: var(--naranja); display: block; }
+
+.hero-sub {
+  font-size: clamp(1.1rem, 2.5vw, 1.6rem);
+  font-weight: 600;
+  color: var(--blanco);
+  opacity: 0.7;
+  margin-top: 2rem;
+  position: relative;
+  z-index: 2;
+  animation: fadeUp 0.9s ease 0.2s both;
+  letter-spacing: 0.03em;
+}
+
+/* DATE BADGE */
+.date-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 1rem;
+  background: rgba(255,229,0,0.08);
+  border: 1.5px solid rgba(255,229,0,0.35);
+  padding: 0.9rem 2rem;
+  margin-top: 2.5rem;
+  position: relative;
+  z-index: 2;
+  animation: fadeUp 0.9s ease 0.3s both;
+}
+.date-badge .pulse-dot {
+  width: 10px; height: 10px;
+  background: var(--rosa);
+  border-radius: 50%;
+  flex-shrink: 0;
+  animation: pulse-glow 1.4s ease infinite;
+}
+@keyframes pulse-glow {
+  0%,100% { box-shadow: 0 0 0 0 rgba(255,45,107,0.7); }
+  50% { box-shadow: 0 0 0 8px rgba(255,45,107,0); }
+}
+.date-badge-text {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.78rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--amarillo);
+}
+
+.hero-ctas {
+  display: flex;
+  gap: 1rem;
+  margin-top: 3rem;
+  position: relative;
+  z-index: 2;
+  flex-wrap: wrap;
+  justify-content: center;
+  animation: fadeUp 0.9s ease 0.4s both;
+}
+.btn-big {
+  background: var(--amarillo);
+  color: var(--negro);
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.3rem;
+  letter-spacing: 0.1em;
+  padding: 1.1rem 3rem;
+  text-decoration: none;
+  border: none;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.2s, box-shadow 0.2s;
+  display: inline-block;
+}
+.btn-big:hover {
+  background: var(--naranja);
+  transform: translateY(-3px);
+  box-shadow: 0 16px 50px rgba(255,92,0,0.45);
+}
+.btn-ghost {
+  background: transparent;
+  color: var(--blanco);
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.3rem;
+  letter-spacing: 0.1em;
+  padding: 1.1rem 3rem;
+  text-decoration: none;
+  border: 1.5px solid rgba(250,250,250,0.25);
+  transition: border-color 0.2s, color 0.2s;
+  display: inline-block;
+}
+.btn-ghost:hover { border-color: var(--amarillo); color: var(--amarillo); }
+
+/* Scroll arrow */
+.scroll-arrow {
+  position: absolute;
+  bottom: 2.5rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.4rem;
+  opacity: 0.4;
+  animation: fadeUp 1s ease 0.8s both;
+}
+.scroll-arrow span {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.6rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+.arrow-line {
+  width: 1px;
+  height: 40px;
+  background: linear-gradient(to bottom, var(--blanco), transparent);
+  animation: arrow-pulse 1.5s ease infinite;
+}
+@keyframes arrow-pulse {
+  0%,100% { opacity: 0.4; transform: scaleY(1); }
+  50% { opacity: 1; transform: scaleY(1.2); }
+}
+
+/* ── VIBE STRIP ── */
+.vibe-strip {
+  background: var(--naranja);
+  padding: 1.5rem 0;
+  overflow: hidden;
+}
+.vibe-track {
+  display: flex;
+  white-space: nowrap;
+  animation: ticker 18s linear infinite reverse;
+}
+.vibe-track span {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 2rem;
+  color: var(--negro);
+  letter-spacing: 0.08em;
+  padding: 0 2rem;
+}
+.vibe-track span.dot { color: var(--amarillo); font-size: 1rem; }
+
+/* ── ARTISTAS ── */
+.section-artistas {
+  padding: 7rem 3rem;
+  max-width: 1500px;
+  margin: 0 auto;
+}
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-bottom: 4rem;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+}
+.section-label {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.7rem;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--amarillo);
+  margin-bottom: 0.75rem;
+}
+.section-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: clamp(3rem, 6vw, 5.5rem);
+  line-height: 0.9;
+  letter-spacing: 0.02em;
+}
+.section-title em {
+  font-style: normal;
+  -webkit-text-stroke: 1.5px var(--blanco);
+  color: transparent;
+}
+
+/* ARTIST GRID */
+.artists-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.5rem;
+}
+
+.artist-card {
+  aspect-ratio: 3/4;
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+  transition: transform 0.3s ease;
+}
+.artist-card:hover { transform: scale(1.02); }
+
+/* REVEALED */
+.artist-card.revealed .card-locked { display: none; }
+.artist-card.revealed .card-revealed { display: flex; }
+
+/* LOCKED */
+.artist-card.locked .card-revealed { display: none; }
+.artist-card.locked .card-locked { display: flex; }
+
+/* Locked state */
+.card-locked {
+  inset: 0;
+  position: absolute;
+  background: var(--gris);
+  border: 1.5px solid rgba(250,250,250,0.06);
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  text-align: center;
+  padding: 2rem;
+}
+.lock-icon {
+  font-size: 2.5rem;
+  opacity: 0.25;
+}
+.lock-text {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.65rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  opacity: 0.3;
+}
+.lock-num {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 4rem;
+  color: rgba(250,250,250,0.05);
+  position: absolute;
+  bottom: 1rem; right: 1.5rem;
+  line-height: 1;
+}
+
+/* Revealed state */
+.card-revealed {
+  position: absolute;
+  inset: 0;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 1.5rem;
+  background: linear-gradient(to top, rgba(6,6,8,0.92) 0%, rgba(6,6,8,0.4) 50%, transparent 100%);
+}
+.card-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: -1;
+}
+.card-img-placeholder {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 5rem;
+  opacity: 0.15;
+}
+.artist-name {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 2.2rem;
+  letter-spacing: 0.05em;
+  line-height: 1;
+  color: var(--blanco);
+}
+.artist-genre {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.62rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--amarillo);
+  margin-top: 0.3rem;
+}
+.artist-tag {
+  display: inline-block;
+  background: var(--naranja);
+  color: var(--negro);
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 0.75rem;
+  letter-spacing: 0.1em;
+  padding: 0.25rem 0.6rem;
+  margin-top: 0.6rem;
+  width: fit-content;
+}
+
+/* FEATURED artist (spans 2 columns) */
+.artist-card.big {
+  grid-column: span 2;
+  aspect-ratio: 3/2;
+}
+.artist-card.big .artist-name { font-size: 3.5rem; }
+
+/* Unlock progress */
+.unlock-progress {
+  margin-top: 3rem;
+  padding: 2rem;
+  background: var(--gris);
+  border: 1.5px solid rgba(250,250,250,0.07);
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+  flex-wrap: wrap;
+}
+.progress-label {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.68rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--amarillo);
+  white-space: nowrap;
+}
+.progress-bar-wrap {
+  flex: 1;
+  height: 4px;
+  background: rgba(250,250,250,0.08);
+  min-width: 120px;
+}
+.progress-bar-fill {
+  height: 100%;
+  background: linear-gradient(to right, var(--amarillo), var(--naranja));
+  width: 25%;
+  transition: width 1s ease;
+}
+.progress-count {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.4rem;
+  color: var(--amarillo);
+  white-space: nowrap;
+}
+
+/* ── HYPE SECTION ── */
+.section-hype {
+  background: var(--amarillo);
+  padding: 7rem 3rem;
+  position: relative;
+  overflow: hidden;
+  text-align: center;
+}
+.section-hype::before {
+  content: 'GMF';
+  position: absolute;
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 30vw;
+  color: rgba(6,6,8,0.05);
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  white-space: nowrap;
+  letter-spacing: -0.02em;
+}
+.hype-inner { position: relative; z-index: 1; max-width: 900px; margin: 0 auto; }
+.hype-label {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.7rem;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--negro);
+  opacity: 0.5;
+  margin-bottom: 1.5rem;
+}
+.hype-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: clamp(4rem, 10vw, 9rem);
+  line-height: 0.88;
+  color: var(--negro);
+  letter-spacing: 0.01em;
+}
+.hype-sub {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: var(--negro);
+  opacity: 0.65;
+  margin: 2rem 0 3rem;
+  line-height: 1.6;
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+}
+.btn-dark {
+  background: var(--negro);
+  color: var(--amarillo);
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.3rem;
+  letter-spacing: 0.1em;
+  padding: 1.1rem 3rem;
+  text-decoration: none;
+  display: inline-block;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.btn-dark:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 16px 50px rgba(6,6,8,0.35);
+}
+
+/* ── ARTISTAS CTA ── */
+.section-artistas-cta {
+  background: var(--rosa);
+  padding: 6rem 3rem;
+  position: relative;
+  overflow: hidden;
+  text-align: center;
+}
+.section-artistas-cta::before {
+  content: '🎤';
+  position: absolute;
+  font-size: 28vw;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  opacity: 0.05;
+  pointer-events: none;
+  line-height: 1;
+}
+.artistas-cta-inner {
+  position: relative;
+  z-index: 1;
+  max-width: 800px;
+  margin: 0 auto;
+}
+.artistas-cta-label {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.7rem;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--negro);
+  opacity: 0.55;
+  margin-bottom: 1.5rem;
+}
+.artistas-cta-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: clamp(3.5rem, 9vw, 8rem);
+  line-height: 0.88;
+  color: var(--negro);
+  letter-spacing: 0.01em;
+  margin-bottom: 1.5rem;
+}
+.artistas-cta-sub {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--negro);
+  opacity: 0.65;
+  line-height: 1.7;
+  max-width: 560px;
+  margin: 0 auto 2.5rem;
+}
+.artistas-perks {
+  display: flex;
+  justify-content: center;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+  margin-bottom: 3rem;
+}
+.artistas-perk {
+  background: rgba(6,6,8,0.12);
+  border: 1.5px solid rgba(6,6,8,0.2);
+  padding: 0.6rem 1.2rem;
+  font-family: 'Space Mono', monospace;
+  font-size: 0.68rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--negro);
+  font-weight: bold;
+}
+.btn-negro {
+  background: var(--negro);
+  color: var(--amarillo);
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.3rem;
+  letter-spacing: 0.1em;
+  padding: 1.1rem 3rem;
+  text-decoration: none;
+  display: inline-block;
+  transition: transform 0.2s, box-shadow 0.2s, background 0.2s;
+  border: none;
+  cursor: pointer;
+}
+.btn-negro:hover {
+  background: #1a1a1f;
+  transform: translateY(-3px);
+  box-shadow: 0 16px 50px rgba(6,6,8,0.5);
+}
+@media (max-width: 768px) {
+  .section-artistas-cta { padding: 5rem 1.2rem; }
+  .artistas-cta-sub { font-size: 0.95rem; }
+  .artistas-perks { gap: 0.75rem; }
+  .artistas-perk { font-size: 0.6rem; padding: 0.5rem 0.9rem; }
+  .btn-negro { font-size: 1rem; padding: 0.9rem 2rem; width: 100%; text-align: center; }
+}
+
+/* ── NOTIFY ── */
+.section-notify {
+  padding: 7rem 3rem;
+  max-width: 900px;
+  margin: 0 auto;
+  text-align: center;
+}
+.notify-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: clamp(3rem, 7vw, 6rem);
+  line-height: 0.9;
+  margin-bottom: 1.5rem;
+}
+.notify-sub {
+  opacity: 0.5;
+  font-size: 1rem;
+  line-height: 1.7;
+  margin-bottom: 3rem;
+  max-width: 500px;
+  margin-left: auto;
+  margin-right: auto;
+}
+.notify-form {
+  display: flex;
+  gap: 0;
+  max-width: 480px;
+  margin: 0 auto;
+  flex-wrap: wrap;
+}
+.notify-input {
+  flex: 1;
+  background: var(--gris);
+  border: 1.5px solid rgba(250,250,250,0.12);
+  border-right: none;
+  color: var(--blanco);
+  font-family: 'Bricolage Grotesque', sans-serif;
+  font-size: 0.9rem;
+  padding: 1rem 1.5rem;
+  outline: none;
+  transition: border-color 0.2s;
+  min-width: 0;
+}
+.notify-input:focus { border-color: var(--amarillo); }
+.notify-input::placeholder { opacity: 0.35; }
+.notify-btn {
+  background: var(--amarillo);
+  color: var(--negro);
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1rem;
+  letter-spacing: 0.1em;
+  padding: 1rem 1.8rem;
+  border: none;
+  cursor: pointer;
+  transition: background 0.2s;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.notify-btn:hover { background: var(--naranja); }
+.notify-note {
+  font-size: 0.7rem;
+  opacity: 0.3;
+  margin-top: 1rem;
+  font-family: 'Space Mono', monospace;
+  letter-spacing: 0.08em;
+}
+
+/* ── TICKETS PAYPAL ── */
+.section-tickets {
+  padding: 7rem 3rem;
+  max-width: 700px;
+  margin: 0 auto;
+  text-align: center;
+}
+.ticket-box {
+  background: var(--gris);
+  border: 1.5px solid rgba(255,229,0,0.2);
+  padding: 3rem 2.5rem;
+  margin-top: 3rem;
+}
+.ticket-precio {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 5rem;
+  line-height: 1;
+  color: var(--amarillo);
+}
+.ticket-moneda {
+  font-size: 1.5rem;
+  vertical-align: super;
+  margin-right: 0.2rem;
+  opacity: 0.7;
+}
+.ticket-equiv {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.68rem;
+  letter-spacing: 0.15em;
+  opacity: 0.35;
+  margin-top: 0.5rem;
+  margin-bottom: 2rem;
+}
+.ticket-perks {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  margin-bottom: 2.5rem;
+  text-align: left;
+}
+.ticket-perk {
+  font-size: 0.88rem;
+  opacity: 0.6;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+.ticket-perk::before {
+  content: '◆';
+  color: var(--amarillo);
+  font-size: 0.5rem;
+  flex-shrink: 0;
+}
+.codigo-field {
+  margin-bottom: 1.5rem;
+  text-align: left;
+}
+.codigo-label {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.65rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--amarillo);
+  margin-bottom: 0.5rem;
+  display: block;
+}
+.codigo-input {
+  width: 100%;
+  background: rgba(250,250,250,0.05);
+  border: 1.5px solid rgba(250,250,250,0.12);
+  color: var(--blanco);
+  font-family: 'Space Mono', monospace;
+  font-size: 0.9rem;
+  padding: 0.85rem 1.2rem;
+  outline: none;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  transition: border-color 0.2s;
+}
+.codigo-input:focus { border-color: var(--amarillo); }
+.codigo-input::placeholder { opacity: 0.25; text-transform: none; letter-spacing: 0; }
+.codigo-nota {
+  font-size: 0.65rem;
+  opacity: 0.3;
+  margin-top: 0.4rem;
+  font-family: 'Space Mono', monospace;
+}
+#paypal-container-UFLEEEFRRHXWG {
+  margin-top: 0.5rem;
+}
+@media (max-width: 768px) {
+  .section-tickets { padding: 5rem 1.2rem; }
+  .ticket-box { padding: 2rem 1.5rem; }
+  .ticket-precio { font-size: 4rem; }
+}
+
+/* ── REDES ── */
+.section-redes {
+  border-top: 1px solid rgba(250,250,250,0.08);
+  padding: 4rem 3rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 2rem;
+  max-width: 1500px;
+  margin: 0 auto;
+}
+.redes-links { display: flex; gap: 2rem; flex-wrap: wrap; }
+.red-link {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.1rem;
+  letter-spacing: 0.1em;
+  color: var(--blanco);
+  text-decoration: none;
+  opacity: 0.4;
+  transition: opacity 0.2s, color 0.2s;
+}
+.red-link:hover { opacity: 1; color: var(--amarillo); }
+
+/* ── FOOTER ── */
+footer {
+  border-top: 1px solid rgba(250,250,250,0.06);
+  padding: 2.5rem 3rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+.footer-logo {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.2rem;
+  letter-spacing: 0.12em;
+  color: var(--amarillo);
+}
+.footer-copy {
+  font-size: 0.7rem;
+  opacity: 0.25;
+  font-family: 'Space Mono', monospace;
+}
+
+/* ── ANIMATIONS ── */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(35px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.reveal { opacity: 0; transform: translateY(40px); transition: opacity 0.8s ease, transform 0.8s ease; }
+.reveal.visible { opacity: 1; transform: translateY(0); }
+
+/* ── RESPONSIVE ── */
+@media (max-width: 1100px) {
+  .artists-grid { grid-template-columns: repeat(3, 1fr); }
+  .artist-card.big { grid-column: span 3; aspect-ratio: 16/7; }
+  .artist-card.big .artist-name { font-size: 3rem; }
+}
+@media (max-width: 768px) {
+  nav {
+    padding: 1rem 1.2rem;
+    top: 2.2rem;
+  }
+  .nav-logo { font-size: 1.1rem; }
+  .btn-tickets { font-size: 0.78rem; padding: 0.55rem 1.1rem; }
+
+  .hero { padding: 7rem 1.2rem 5rem; }
+  .hero-eyebrow { font-size: 0.6rem; letter-spacing: 0.15em; }
+  .date-badge { padding: 0.7rem 1rem; gap: 0.6rem; }
+  .date-badge-text { font-size: 0.62rem; letter-spacing: 0.08em; }
+  .hero-ctas { gap: 0.75rem; margin-top: 2rem; }
+  .btn-big, .btn-ghost { font-size: 1rem; padding: 0.9rem 1.8rem; width: 100%; text-align: center; }
+
+  .artists-grid { grid-template-columns: repeat(2, 1fr); gap: 0.75rem; }
+  .artist-card.big { grid-column: span 2; aspect-ratio: 16/7; }
+  .artist-card.big .artist-name { font-size: 2rem; }
+
+  .section-artistas { padding: 4rem 1.2rem; }
+  .section-header { margin-bottom: 2rem; }
+  .section-header > div:last-child { display: none; }
+
+  .section-hype { padding: 5rem 1.2rem; }
+  .hype-sub { font-size: 1rem; margin: 1.5rem 0 2rem; }
+  .btn-dark { font-size: 1rem; padding: 0.9rem 2rem; }
+
+  .section-notify { padding: 5rem 1.2rem; }
+  .notify-form { flex-direction: column; }
+  .notify-input {
+    border-right: 1.5px solid rgba(250,250,250,0.12);
+    border-bottom: none;
+    width: 100%;
+  }
+  .notify-btn { width: 100%; padding: 1rem; }
+
+  .section-redes { padding: 3rem 1.2rem; flex-direction: column; align-items: flex-start; }
+  .section-redes > div:last-child { text-align: left; }
+
+  footer { padding: 2rem 1.2rem; flex-direction: column; align-items: flex-start; gap: 0.5rem; }
+
+  .unlock-progress { gap: 1rem; padding: 1.5rem; }
+  .progress-label { font-size: 0.58rem; }
+}
+@media (max-width: 420px) {
+  .hero-title { font-size: clamp(4rem, 18vw, 6rem); }
+  .artists-grid { grid-template-columns: 1fr 1fr; gap: 0.5rem; }
+  .artist-card.big { grid-column: span 2; }
+  .vibe-track span { font-size: 1.4rem; }
+  .section-title { font-size: clamp(2.5rem, 10vw, 4rem); }
+}
+</style>
+<script src="https://www.paypal.com/sdk/js?client-id=AdO0ZAcGWXplwV7eR8SCCSWkTDLN8g9CWmq-IgfUdqA_jsYLqQQZDXBG9uMkHBLOMf6dR-aIYU1sGfUL&currency=USD&disable-funding=venmo,paylater"></script>
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+</head>
+<body>
+
+<!-- TICKER -->
+<div class="ticker-wrap">
+  <div class="ticker-track" id="tickerTrack"></div>
+</div>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">GMF · 2026</div>
+  <a href="#notify" class="btn-tickets">Comprar Entrada</a>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-bubbles" id="heroBubbles"></div>
+
+  <div class="hero-eyebrow">Guatemala · Noviembre 2026</div>
+
+  <h1 class="hero-title">
+    <span class="line1">GUATEMALA</span>
+    <span class="line2">MUSIC</span>
+    <span class="line3">FESTIVAL</span>
+  </h1>
+
+  <p class="hero-sub">12 artistas. 12 horas. Pura vibra guatemalteca.</p>
+
+  <div class="date-badge">
+    <span class="pulse-dot"></span>
+    <span class="date-badge-text">Fecha por confirmar · Noviembre 2026 · Guatemala</span>
+  </div>
+
+  <div class="hero-ctas">
+    <a href="#notify" class="btn-big">Comprar mi entrada</a>
+    <a href="#artistas" class="btn-ghost">Ver artistas</a>
+  </div>
+
+  <div class="scroll-arrow">
+    <div class="arrow-line"></div>
+    <span>Scroll</span>
+  </div>
+</section>
+
+<!-- VIBE STRIP -->
+<div class="vibe-strip">
+  <div class="vibe-track" id="vibeTrack"></div>
+</div>
+
+<!-- ARTISTAS -->
+<section class="section-artistas" id="artistas">
+  <div class="section-header reveal">
+    <div>
+      <p class="section-label">Line-up</p>
+      <h2 class="section-title">Los artistas<br><em>se revelan</em><br>pronto.</h2>
+    </div>
+    <div style="text-align:right; max-width: 280px;">
+      <p style="opacity:0.45; font-size:0.9rem; line-height:1.7;">Cada semana desbloqueamos un nuevo artista. Síguenos para ser el primero en enterarte.</p>
+    </div>
+  </div>
+
+  <div class="artists-grid" id="artistsGrid"></div>
+
+  <div class="unlock-progress reveal">
+    <span class="progress-label">Artistas revelados</span>
+    <div class="progress-bar-wrap">
+      <div class="progress-bar-fill" id="progressBar"></div>
+    </div>
+    <span class="progress-count" id="progressCount">0 / 12</span>
+  </div>
+</section>
+
+<!-- HYPE -->
+<section class="section-hype">
+  <div class="hype-inner">
+    <p class="hype-label">¿Qué esperar?</p>
+    <h2 class="hype-title">12 HORAS QUE NO VAS A OLVIDAR</h2>
+    <p class="hype-sub">12 artistas, 45 minutos cada uno, pura energía de principio a fin. El festival que Guatemala estaba esperando.</p>
+    <a href="#notify" class="btn-dark">Comprar mi entrada</a>
+  </div>
+</section>
+
+<!-- ARTISTAS CTA -->
+<section class="section-artistas-cta" id="participa">
+  <div class="artistas-cta-inner">
+    <p class="artistas-cta-label reveal">¿Eres artista?</p>
+    <h2 class="artistas-cta-title reveal">QUIERO ESTAR EN EL FESTIVAL</h2>
+    <p class="artistas-cta-sub reveal">Inscríbete al casting virtual, presenta tu música ante Guatemala y gana una comisión con cada entrada que vende tu comunidad.</p>
+    <div class="artistas-perks reveal">
+      <span class="artistas-perk">🎤 45 min en escenario</span>
+      <span class="artistas-perk">💰 Comisión por tickets</span>
+      <span class="artistas-perk">📱 Casting virtual</span>
+      <span class="artistas-perk">🏆 Selección en septiembre</span>
+    </div>
+    <a href="https://docs.google.com/forms/d/e/1FAIpQLSf1VfOjfqJTjYgXSicCCgPhCTBjyrOky_qA-SPRP88ALVbeCw/viewform?usp=header" target="_blank" class="btn-negro reveal">Quiero Participar en el Casting</a>
+  </div>
+</section>
+
+<!-- TICKETS -->
+<section class="section-tickets" id="notify">
+  <p class="section-label reveal" style="color:var(--amarillo);">Entradas</p>
+  <h2 class="notify-title reveal">Asegura<br>tu lugar<br><span style="color:var(--naranja);">ahora.</span></h2>
+  <p class="notify-sub reveal">Las entradas son limitadas. Compra la tuya antes de que se agoten.</p>
+
+  <div class="ticket-box reveal" id="ticket-box-content">
+    <div class="ticket-precio">
+      <span class="ticket-moneda">Q</span>200
+    </div>
+    <p class="ticket-equiv">$26.00 USD · Entrada General</p>
+
+    <div class="ticket-perks">
+      <div class="ticket-perk">Acceso completo al festival</div>
+      <div class="ticket-perk">12 artistas en vivo</div>
+      <div class="ticket-perk">12:00 PM — 12:00 AM · Noviembre 2026</div>
+      <div class="ticket-perk">QR de entrada en tu email</div>
+    </div>
+
+    <div class="codigo-field">
+      <span class="codigo-label">Tu nombre completo *</span>
+      <input type="text" class="codigo-input" id="nombreFan" placeholder="Ingresa tu nombre completo" maxlength="60">
+    </div>
+
+    <div class="codigo-field">
+      <span class="codigo-label">Tu correo electrónico *</span>
+      <input type="email" class="codigo-input" id="emailFan" placeholder="Aquí recibirás tu QR de entrada" maxlength="80">
+      <p class="codigo-nota">Te enviaremos tu código QR a este correo inmediatamente después del pago.</p>
+    </div>
+
+    <div class="codigo-field">
+      <span class="codigo-label">Código de artista (opcional)</span>
+      <input
+        type="text"
+        class="codigo-input"
+        id="codigoArtista"
+        placeholder="Ingresa el código de tu artista"
+        maxlength="20"
+      >
+      <p class="codigo-nota">Si un artista te compartió su código, ingrésalo aquí. El 10% va directo a ellos.</p>
+    </div>
+
+    <div id="paypal-button-container"></div>
+    <div id="paypal-processing" style="display:none; text-align:center; padding:1rem;">
+      <p style="font-family:'Space Mono',monospace; font-size:0.75rem; color:var(--amarillo); letter-spacing:0.1em;">⏳ PROCESANDO TU PAGO...</p>
+    </div>
+  </div>
+</section>
+
+<!-- REDES -->
+<div class="section-redes reveal">
+  <div>
+    <p style="font-size:0.68rem; letter-spacing:0.2em; text-transform:uppercase; opacity:0.3; margin-bottom:0.75rem; font-family:'Space Mono',monospace;">Síguenos</p>
+    <div class="redes-links">
+      <a href="#" class="red-link">Instagram</a>
+      <a href="#" class="red-link">TikTok</a>
+      <a href="#" class="red-link">Facebook</a>
+      <a href="#" class="red-link">YouTube</a>
+    </div>
+  </div>
+  <div style="text-align:right;">
+    <p style="font-size:0.68rem; letter-spacing:0.2em; text-transform:uppercase; opacity:0.3; margin-bottom:0.5rem; font-family:'Space Mono',monospace;">Contacto</p>
+    <p style="opacity:0.45; font-size:0.85rem;">guatemusicfest@gmail.com</p>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">Guatemala Music Festival</div>
+  <p class="footer-copy">© 2026 Guatemala Music Festival · Todos los derechos reservados</p>
+</footer>
+
+<script>
+// ── TICKER ──
+const tickerMsgs = [
+  'Guatemala Music Festival','◆','Noviembre 2026','◆','12 Artistas','◆',
+  '12 horas de música','◆','Pura vibra','◆','Talento guatemalteco','◆',
+  'Fecha por confirmar','◆','Tickets próximamente','◆'
+];
+const tt = document.getElementById('tickerTrack');
+let tickerHTML = '';
+for(let i=0;i<4;i++) tickerMsgs.forEach((m,j) => {
+  tickerHTML += `<span class="${m==='◆'?'sep':''}">${m}</span>`;
+});
+tt.innerHTML = tickerHTML;
+
+// ── VIBE STRIP ──
+const vibeMsgs = ['MÚSICA EN VIVO','●','TALENTO LOCAL','●','12 HORAS DE MÚSICA','●','NOVIEMBRE 2026','●','GUATEMALA','●','FESTIVAL','●'];
+const vt = document.getElementById('vibeTrack');
+let vibeHTML = '';
+for(let i=0;i<4;i++) vibeMsgs.forEach((m,j) => {
+  vibeHTML += `<span class="${m==='●'?'dot':''}">${m}</span>`;
+});
+vt.innerHTML = vibeHTML;
+
+// ── BUBBLES ──
+const bContainer = document.getElementById('heroBubbles');
+const colors = ['#FFE500','#FF5C00','#FF2D6B','#00C2FF'];
+for(let i=0;i<22;i++){
+  const b = document.createElement('div');
+  b.className = 'bubble';
+  const size = 40 + Math.random()*180;
+  b.style.cssText = `
+    width:${size}px; height:${size}px;
+    left:${Math.random()*100}%;
+    background:${colors[Math.floor(Math.random()*colors.length)]};
+    --dur:${8+Math.random()*14}s;
+    --delay:${Math.random()*10}s;
+    animation-delay:var(--delay);
+  `;
+  bContainer.appendChild(b);
+}
+
+// ── CONFETTI ──
+const shapes = ['■','▲','●','◆','▬'];
+for(let i=0;i<18;i++){
+  const c = document.createElement('div');
+  c.className = 'confetti-shape';
+  const col = colors[Math.floor(Math.random()*colors.length)];
+  c.style.cssText = `
+    left:${Math.random()*100}%;
+    color:${col};
+    font-size:${10+Math.random()*16}px;
+    --dur:${5+Math.random()*8}s;
+    --delay:-${Math.random()*10}s;
+  `;
+  c.textContent = shapes[Math.floor(Math.random()*shapes.length)];
+  document.querySelector('.hero').appendChild(c);
+}
+
+// ── ARTISTS ──
+const artists = [
+  { id:1, revealed:false, big:true,  name:'???', genre:'', emoji:'', color:'#FF5C00', tag:null },
+  { id:2, revealed:false, big:false, name:'???', genre:'', emoji:'', color:'#FF2D6B', tag:null },
+  { id:3, revealed:false, big:false, name:'???', genre:'', emoji:'', color:'#00C2FF', tag:null },
+  { id:4, revealed:false, big:false, name:'???',        genre:'',              emoji:'', color:'', tag:null },
+  { id:5, revealed:false, big:false, name:'???',        genre:'',              emoji:'', color:'', tag:null },
+  { id:6, revealed:false, big:false, name:'???',        genre:'',              emoji:'', color:'', tag:null },
+  { id:7, revealed:false, big:false, name:'???',        genre:'',              emoji:'', color:'', tag:null },
+  { id:8, revealed:false, big:false, name:'???',        genre:'',              emoji:'', color:'', tag:null },
+  { id:9, revealed:false, big:false, name:'???',        genre:'',              emoji:'', color:'', tag:null },
+  { id:10,revealed:false, big:false, name:'???',        genre:'',              emoji:'', color:'', tag:null },
+  { id:11,revealed:false, big:false, name:'???',        genre:'',              emoji:'', color:'', tag:null },
+  { id:12,revealed:false, big:false, name:'???',        genre:'',              emoji:'', color:'', tag:null },
+];
+
+const grid = document.getElementById('artistsGrid');
+const revealedCount = artists.filter(a=>a.revealed).length;
+const total = artists.length;
+
+artists.forEach(a => {
+  const card = document.createElement('div');
+  card.className = `artist-card ${a.revealed?'revealed':'locked'} ${a.big?'big':''} reveal`;
+
+  if(a.revealed){
+    card.innerHTML = `
+      <div class="card-img-placeholder" style="background:linear-gradient(135deg,${a.color}22,${a.color}08)">
+        ${a.emoji}
+      </div>
+      <div class="card-revealed">
+        <div>
+          ${a.tag ? `<div class="artist-tag">${a.tag}</div>` : ''}
+          <div class="artist-name">${a.name}</div>
+          <div class="artist-genre">${a.genre}</div>
+        </div>
+      </div>
+    `;
+  } else {
+    card.innerHTML = `
+      <div class="card-locked">
+        <div class="lock-icon">🔒</div>
+        <div class="lock-text">Próximamente</div>
+        <div class="lock-num">${a.id}</div>
+      </div>
+    `;
+    // Hover hint
+    card.addEventListener('mouseenter', () => {
+      card.querySelector('.lock-icon').textContent = '👀';
+    });
+    card.addEventListener('mouseleave', () => {
+      card.querySelector('.lock-icon').textContent = '🔒';
+    });
+  }
+  grid.appendChild(card);
+});
+
+// Progress bar
+document.getElementById('progressBar').style.width = `${(revealedCount/total)*100}%`;
+document.getElementById('progressCount').textContent = `${revealedCount} / ${total}`;
+
+// ── EMAILJS INIT ──
+emailjs.init('Prvx-uGZhX-vrkrG8');
+
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzOTNQla49fyxcyI0yAPed9V6V3HY9OLhXYMnAuGmp67ZWr15oVGbcLAAU_5jQHU9H9bQ/exec';
+
+let pagoProcesado = false;
+
+function generarCodigoQR() {
+  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+  let codigo = 'GMF26-';
+  for (let i = 0; i < 8; i++) codigo += chars[Math.floor(Math.random() * chars.length)];
+  return codigo;
+}
+
+async function guardarTicketEnSheets(datos) {
+  try {
+    await fetch(SCRIPT_URL, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'guardar_ticket', ...datos })
+    });
+    return true;
+  } catch(err) {
+    console.error('Error guardando en Sheets:', err);
+    return false;
+  }
+}
+
+function mostrarConfirmacion(nombre, email, qr_code) {
+  document.getElementById('ticket-box-content').innerHTML = `
+    <div style="text-align:center; padding: 2rem 0;">
+      <div style="font-size:3rem; margin-bottom:1rem;">🎉</div>
+      <h3 style="font-family:'Bebas Neue',sans-serif; font-size:2rem; color:var(--amarillo); letter-spacing:0.05em; margin-bottom:0.5rem;">¡ENTRADA CONFIRMADA!</h3>
+      <p style="opacity:0.6; margin-bottom:1.5rem;">Tu código QR fue enviado a <strong style="color:var(--blanco);">${email}</strong></p>
+      <div style="background:var(--negro); border:2px solid var(--naranja); padding:1.5rem; display:inline-block; margin-bottom:1rem;">
+        <p style="font-family:'Space Mono',monospace; font-size:0.75rem; color:var(--amarillo); letter-spacing:0.15em; text-transform:uppercase; margin-bottom:1rem;">Tu código de entrada</p>
+        <a href="https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${qr_code}&bgcolor=000000&color=FFE500" target="_blank"
+           style="background:var(--amarillo); color:var(--negro); font-family:'Bebas Neue',sans-serif; font-size:1.1rem; letter-spacing:0.1em; padding:0.85rem 2rem; text-decoration:none; display:inline-block;">
+          📱 Ver mi código QR
+        </a>
+        <p style="font-size:0.7rem; opacity:0.4; margin-top:1rem; font-family:'Space Mono',monospace;">${qr_code}</p>
+      </div>
+      <p style="font-size:0.75rem; opacity:0.35; font-family:'Space Mono',monospace;">Revisa también tu email — te enviamos tu entrada ahí.</p>
+    </div>
+  `;
+}
+
+// ── PAYPAL STANDARD BUTTON ──
+function initPayPal() {
+  if (typeof paypal === 'undefined') {
+    setTimeout(initPayPal, 300);
+    return;
+  }
+
+  paypal.Buttons({
+    style: {
+      color: 'gold',
+      shape: 'rect',
+      label: 'pay',
+      height: 50
+    },
+
+    // Crear la orden
+    createOrder: function(data, actions) {
+      const nombre = document.getElementById('nombreFan').value.trim();
+      const email = document.getElementById('emailFan').value.trim();
+
+      if (!nombre || !email) {
+        alert('Por favor ingresa tu nombre y correo electrónico antes de pagar.');
+        return false;
+      }
+      if (!email.includes('@')) {
+        alert('Por favor ingresa un correo electrónico válido.');
+        return false;
+      }
+
+      return actions.order.create({
+        purchase_units: [{
+          description: 'Entrada General — Guatemala Music Festival 2026',
+          amount: {
+            value: '1.00',
+            currency_code: 'USD'
+          }
+        }]
+      });
+    },
+
+    // Pago aprobado
+    onApprove: async function(data, actions) {
+      if (pagoProcesado) return;
+      pagoProcesado = true;
+
+      // Mostrar processing
+      document.getElementById('paypal-button-container').style.display = 'none';
+      document.getElementById('paypal-processing').style.display = 'block';
+
+      try {
+        const order = await actions.order.capture();
+
+        const nombre = document.getElementById('nombreFan').value.trim();
+        const email = document.getElementById('emailFan').value.trim();
+        const codigo_artista = document.getElementById('codigoArtista').value.trim().toUpperCase();
+        const qr_code = generarCodigoQR();
+        const fecha = new Date().toLocaleDateString('es-GT');
+        const monto = '$26.00 USD';
+        const qr_image = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${qr_code}&bgcolor=060608&color=FFE500`;
+
+        // Guardar en Google Sheets
+        await guardarTicketEnSheets({
+          qr_code, nombre, email,
+          codigo_artista: codigo_artista || 'N/A',
+          fecha, monto
+        });
+
+        // Mandar email con QR
+        await emailjs.send('service_9firke7', 'template_6rnlvlg', {
+          email, nombre, qr_code,
+          codigo_artista: codigo_artista || 'N/A',
+          fecha
+        });
+
+        // Mostrar confirmación
+        mostrarConfirmacion(nombre, email, qr_code);
+
+      } catch(err) {
+        console.error('Error procesando pago:', err);
+        const qr_code = generarCodigoQR();
+        const email = document.getElementById('emailFan').value.trim();
+        const nombre = document.getElementById('nombreFan').value.trim();
+        const qr_image = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${qr_code}&bgcolor=060608&color=FFE500`;
+        mostrarConfirmacion(nombre, email, qr_code);
+      }
+    },
+
+    // Error
+    onError: function(err) {
+      console.error('Error PayPal:', err);
+      pagoProcesado = false;
+      document.getElementById('paypal-button-container').style.display = 'block';
+      document.getElementById('paypal-processing').style.display = 'none';
+      alert('Hubo un error procesando el pago. Por favor intenta de nuevo.');
+    },
+
+    // Usuario canceló
+    onCancel: function() {
+      pagoProcesado = false;
+      document.getElementById('paypal-button-container').style.display = 'block';
+      document.getElementById('paypal-processing').style.display = 'none';
+    }
+
+  }).render('#paypal-button-container');
+}
+initPayPal();
+
+// ── REVEAL ON SCROLL ──
+const reveals = document.querySelectorAll('.reveal');
+const obs = new IntersectionObserver(entries => {
+  entries.forEach((e, i) => {
+    if(e.isIntersecting){
+      setTimeout(() => e.target.classList.add('visible'), i * 60);
+      obs.unobserve(e.target);
+    }
+  });
+}, { threshold: 0.1 });
+reveals.forEach(r => obs.observe(r));
+</script>
+</body>
+</html>

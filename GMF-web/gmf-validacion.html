@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>GMF 2026 — Validación de Entrada</title>
+<script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body {
+    background: #060608;
+    color: #FAFAFA;
+    font-family: Arial, sans-serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 1.5rem;
+  }
+  .header {
+    background: #FFE500;
+    width: 100%;
+    max-width: 480px;
+    padding: 1rem 1.5rem;
+    text-align: center;
+    margin-bottom: 1.5rem;
+  }
+  .header h1 { font-size: 1.1rem; font-weight: 900; color: #060608; letter-spacing: 0.1em; text-transform: uppercase; }
+  .header p { font-size: 0.7rem; color: #060608; opacity: 0.6; letter-spacing: 0.15em; text-transform: uppercase; margin-top: 0.25rem; }
+  .login-box { background: #1a1a1f; border: 1.5px solid rgba(255,229,0,0.2); padding: 2rem; width: 100%; max-width: 480px; margin-bottom: 1.5rem; }
+  .login-label { font-size: 0.65rem; letter-spacing: 0.2em; text-transform: uppercase; color: #FFE500; margin-bottom: 0.5rem; display: block; }
+  .login-input { width: 100%; background: #060608; border: 1.5px solid rgba(250,250,250,0.1); color: #FAFAFA; font-size: 1rem; padding: 0.85rem 1rem; outline: none; margin-bottom: 1rem; letter-spacing: 0.1em; }
+  .login-input:focus { border-color: #FFE500; }
+  .btn-login { width: 100%; background: #FFE500; color: #060608; font-weight: 900; font-size: 1rem; letter-spacing: 0.1em; text-transform: uppercase; padding: 1rem; border: none; cursor: pointer; }
+  .btn-login:hover { background: #FF5C00; color: #fff; }
+  .scanner-box { background: #1a1a1f; border: 1.5px solid rgba(255,229,0,0.2); padding: 1.5rem; width: 100%; max-width: 480px; margin-bottom: 1.5rem; display: none; }
+  #reader { width: 100%; border-radius: 2px; overflow: hidden; }
+  .scan-label { font-size: 0.65rem; letter-spacing: 0.2em; text-transform: uppercase; color: #FFE500; text-align: center; margin-bottom: 1rem; display: block; }
+  .manual-box { background: #1a1a1f; border: 1.5px solid rgba(250,250,250,0.08); padding: 1.5rem; width: 100%; max-width: 480px; margin-bottom: 1.5rem; display: none; }
+  .manual-row { display: flex; }
+  .manual-input { flex: 1; background: #060608; border: 1.5px solid rgba(250,250,250,0.1); border-right: none; color: #FAFAFA; font-family: monospace; font-size: 0.9rem; padding: 0.85rem 1rem; outline: none; text-transform: uppercase; letter-spacing: 0.1em; }
+  .manual-input:focus { border-color: #FFE500; }
+  .btn-validar { background: #FFE500; color: #060608; font-weight: 900; font-size: 0.85rem; letter-spacing: 0.08em; text-transform: uppercase; padding: 0.85rem 1.2rem; border: none; cursor: pointer; }
+  .btn-validar:hover { background: #FF5C00; color: #fff; }
+  .resultado { width: 100%; max-width: 480px; padding: 1.5rem; text-align: center; display: none; margin-bottom: 1.5rem; }
+  .resultado.valido { background: rgba(30,185,84,0.15); border: 2px solid #1db954; }
+  .resultado.usado { background: rgba(255,92,0,0.15); border: 2px solid #FF5C00; }
+  .resultado.invalido { background: rgba(255,45,107,0.15); border: 2px solid #FF2D6B; }
+  .resultado-icon { font-size: 3rem; margin-bottom: 0.75rem; }
+  .resultado-titulo { font-size: 1.4rem; font-weight: 900; letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 0.5rem; }
+  .resultado.valido .resultado-titulo { color: #1db954; }
+  .resultado.usado .resultado-titulo { color: #FF5C00; }
+  .resultado.invalido .resultado-titulo { color: #FF2D6B; }
+  .resultado-detalle { font-size: 0.85rem; opacity: 0.7; line-height: 1.6; }
+  .resultado-info { margin-top: 1rem; background: rgba(0,0,0,0.3); padding: 1rem; text-align: left; font-size: 0.8rem; line-height: 1.8; }
+  .resultado-info span { color: #FFE500; }
+  .contador-box { background: #1a1a1f; border: 1.5px solid rgba(255,229,0,0.15); padding: 1rem 1.5rem; width: 100%; max-width: 480px; display: none; margin-bottom: 1.5rem; }
+  .contador-titulo { font-size: 0.6rem; letter-spacing: 0.2em; text-transform: uppercase; opacity: 0.4; margin-bottom: 0.75rem; }
+  .contador-nums { display: flex; gap: 1.5rem; }
+  .contador-item { text-align: center; }
+  .contador-num { font-size: 2rem; font-weight: 900; color: #FFE500; line-height: 1; }
+  .contador-label { font-size: 0.6rem; letter-spacing: 0.1em; text-transform: uppercase; opacity: 0.4; margin-top: 0.2rem; }
+  .btn-nuevo-scan { width: 100%; max-width: 480px; background: transparent; color: #FAFAFA; border: 1.5px solid rgba(250,250,250,0.2); font-size: 0.85rem; letter-spacing: 0.1em; text-transform: uppercase; padding: 0.85rem; cursor: pointer; display: none; margin-bottom: 1rem; }
+  .btn-nuevo-scan:hover { border-color: #FFE500; color: #FFE500; }
+  .loading { color: #FFE500; font-size: 0.85rem; text-align: center; padding: 1rem; display: none; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>Guatemala Music Festival 2026</h1>
+  <p>Sistema de Validación de Entrada</p>
+</div>
+
+<div class="login-box" id="loginBox">
+  <span class="login-label">Acceso Staff — Contraseña</span>
+  <input type="password" class="login-input" id="passwordInput" placeholder="Contraseña del evento" onkeypress="if(event.key==='Enter') verificarPassword()">
+  <button class="btn-login" onclick="verificarPassword()">Ingresar</button>
+  <p id="loginError" style="color:#FF2D6B; font-size:0.75rem; margin-top:0.75rem; display:none;">Contraseña incorrecta.</p>
+</div>
+
+<div class="contador-box" id="contadorBox">
+  <p class="contador-titulo">Entradas validadas en este dispositivo</p>
+  <div class="contador-nums">
+    <div class="contador-item"><div class="contador-num" id="contValidas">0</div><div class="contador-label">Válidas</div></div>
+    <div class="contador-item"><div class="contador-num" id="contUsadas" style="color:#FF5C00;">0</div><div class="contador-label">Ya usadas</div></div>
+    <div class="contador-item"><div class="contador-num" id="contInvalidas" style="color:#FF2D6B;">0</div><div class="contador-label">Inválidas</div></div>
+    <div class="contador-item"><div class="contador-num" id="contTotal" style="color:#aaa;">0</div><div class="contador-label">Total</div></div>
+  </div>
+</div>
+
+<div class="scanner-box" id="scannerBox">
+  <span class="scan-label">Apunta la cámara al código QR</span>
+  <div id="reader"></div>
+</div>
+
+<div class="manual-box" id="manualBox">
+  <span class="login-label">O ingresa el código manualmente</span>
+  <div class="manual-row">
+    <input type="text" class="manual-input" id="manualInput" placeholder="GMF26-XXXXXXXX" maxlength="14" onkeypress="if(event.key==='Enter') validarManual()">
+    <button class="btn-validar" onclick="validarManual()">Validar</button>
+  </div>
+</div>
+
+<div class="loading" id="loading">⏳ Consultando base de datos...</div>
+
+<div class="resultado" id="resultado">
+  <div class="resultado-icon" id="resultIcon"></div>
+  <div class="resultado-titulo" id="resultTitulo"></div>
+  <div class="resultado-detalle" id="resultDetalle"></div>
+  <div class="resultado-info" id="resultInfo"></div>
+</div>
+
+<button class="btn-nuevo-scan" id="btnNuevo" onclick="nuevoScan()">↩ Escanear siguiente entrada</button>
+
+<script>
+const PASSWORD = 'GMF2026staff';
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzOTNQla49fyxcyI0yAPed9V6V3HY9OLhXYMnAuGmp67ZWr15oVGbcLAAU_5jQHU9H9bQ/exec';
+
+let contValidas = 0, contUsadas = 0, contInvalidas = 0;
+let escaneando = true;
+let scanner = null;
+
+function verificarPassword() {
+  const pass = document.getElementById('passwordInput').value;
+  if (pass === PASSWORD) {
+    document.getElementById('loginBox').style.display = 'none';
+    document.getElementById('scannerBox').style.display = 'block';
+    document.getElementById('manualBox').style.display = 'block';
+    document.getElementById('contadorBox').style.display = 'block';
+    iniciarScanner();
+  } else {
+    document.getElementById('loginError').style.display = 'block';
+  }
+}
+
+function actualizarContador() {
+  document.getElementById('contValidas').textContent = contValidas;
+  document.getElementById('contUsadas').textContent = contUsadas;
+  document.getElementById('contInvalidas').textContent = contInvalidas;
+  document.getElementById('contTotal').textContent = contValidas + contUsadas + contInvalidas;
+}
+
+function iniciarScanner() {
+  scanner = new Html5Qrcode("reader");
+  scanner.start(
+    { facingMode: "environment" },
+    { fps: 10, qrbox: { width: 250, height: 250 } },
+    (decodedText) => {
+      if (!escaneando) return;
+      escaneando = false;
+      validarCodigo(decodedText);
+    },
+    () => {}
+  ).catch(err => console.log('Error camara:', err));
+}
+
+async function validarCodigo(codigo) {
+  codigo = codigo.trim().toUpperCase();
+  document.getElementById('loading').style.display = 'block';
+  document.getElementById('resultado').style.display = 'none';
+
+  try {
+    const response = await fetch(SCRIPT_URL, {
+      method: 'POST',
+      mode: 'cors',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'validar_ticket', qr_code: codigo })
+    });
+    const result = await response.json();
+    document.getElementById('loading').style.display = 'none';
+    mostrarResultado(result, codigo);
+  } catch(err) {
+    // Fallback con no-cors — no podemos leer la respuesta pero igual funciona
+    document.getElementById('loading').style.display = 'none';
+    document.getElementById('resultado').className = 'resultado invalido';
+    document.getElementById('resultado').style.display = 'block';
+    document.getElementById('resultIcon').textContent = '⚠️';
+    document.getElementById('resultTitulo').textContent = 'Error de conexión';
+    document.getElementById('resultDetalle').textContent = 'No se pudo consultar la base de datos. Verifica tu conexión a internet.';
+    document.getElementById('resultInfo').innerHTML = `<span>Código escaneado:</span> ${codigo}`;
+    document.getElementById('btnNuevo').style.display = 'block';
+  }
+}
+
+function mostrarResultado(result, codigo) {
+  const res = document.getElementById('resultado');
+  res.className = 'resultado';
+  res.style.display = 'block';
+  document.getElementById('btnNuevo').style.display = 'block';
+
+  if (result.status === 'valido') {
+    contValidas++;
+    res.classList.add('valido');
+    document.getElementById('resultIcon').textContent = '✅';
+    document.getElementById('resultTitulo').textContent = '¡Entrada Válida!';
+    document.getElementById('resultDetalle').textContent = 'Bienvenido al Guatemala Music Festival 2026.';
+    document.getElementById('resultInfo').innerHTML = `
+      <span>Nombre:</span> ${result.nombre}<br>
+      <span>Código:</span> ${codigo}<br>
+      <span>Artista:</span> ${result.codigo_artista || 'N/A'}<br>
+      <span>Hora de ingreso:</span> ${result.hora_validacion}
+    `;
+  } else if (result.status === 'usado') {
+    contUsadas++;
+    res.classList.add('usado');
+    document.getElementById('resultIcon').textContent = '⚠️';
+    document.getElementById('resultTitulo').textContent = 'Entrada Ya Usada';
+    document.getElementById('resultDetalle').textContent = 'Esta entrada ya fue validada anteriormente.';
+    document.getElementById('resultInfo').innerHTML = `
+      <span>Nombre:</span> ${result.nombre}<br>
+      <span>Código:</span> ${codigo}<br>
+      <span>Validado a las:</span> ${result.hora_validacion}
+    `;
+  } else {
+    contInvalidas++;
+    res.classList.add('invalido');
+    document.getElementById('resultIcon').textContent = '❌';
+    document.getElementById('resultTitulo').textContent = 'Entrada Inválida';
+    document.getElementById('resultDetalle').textContent = 'Este código no existe en el sistema.';
+    document.getElementById('resultInfo').innerHTML = `<span>Código:</span> ${codigo}`;
+  }
+  actualizarContador();
+}
+
+function validarManual() {
+  const codigo = document.getElementById('manualInput').value.trim();
+  if (!codigo) return;
+  escaneando = false;
+  validarCodigo(codigo);
+  document.getElementById('manualInput').value = '';
+}
+
+function nuevoScan() {
+  document.getElementById('resultado').style.display = 'none';
+  document.getElementById('btnNuevo').style.display = 'none';
+  document.getElementById('manualInput').value = '';
+  escaneando = true;
+}
+</script>
+</body>
+</html>
