@@ -952,7 +952,7 @@ footer {
 <section class="hero">
   <div class="hero-bubbles" id="heroBubbles"></div>
 
-  <div class="hero-eyebrow">Guatemala · Noviembre 2026</div>
+  <div class="hero-eyebrow">Guatemala · Enero 2027</div>
 
   <h1 class="hero-title">
     <span class="line1">GUATEMALA</span>
@@ -964,7 +964,7 @@ footer {
 
   <div class="date-badge">
     <span class="pulse-dot"></span>
-    <span class="date-badge-text">Fecha por confirmar · Noviembre 2026 · Guatemala</span>
+    <span class="date-badge-text">Fecha por confirmar · Enero 2027 · Guatemala</span>
   </div>
 
   <div class="hero-ctas">
@@ -1054,6 +1054,12 @@ footer {
       .zona-titulo-general { font-family:'Bebas Neue',sans-serif; font-size:0.95rem; letter-spacing:0.1em; color:#1db954; }
       .zona-precio { font-size:0.7rem; opacity:0.85; font-family:'Space Mono',monospace; margin-top:0.3rem; }
       .zona-sub { font-size:0.6rem; opacity:0.5; margin-top:0.2rem; }
+      .zona-disponibilidad { font-size:0.6rem; font-family:'Space Mono',monospace; margin-top:0.4rem; opacity:0.7; }
+      .cantidad-selector { display:flex; align-items:center; justify-content:center; gap:0.75rem; margin:1rem 0; }
+      .cantidad-btn { background:#1a1a1f; border:1.5px solid rgba(250,250,250,0.2); color:#FAFAFA; width:36px; height:36px; font-size:1.2rem; cursor:pointer; display:flex; align-items:center; justify-content:center; border-radius:2px; transition:background 0.2s; }
+      .cantidad-btn:hover { background:#FFE500; color:#060608; border-color:#FFE500; }
+      .cantidad-num { font-family:'Bebas Neue',sans-serif; font-size:2rem; color:#FFE500; min-width:2rem; text-align:center; }
+      .precio-total { font-family:'Space Mono',monospace; font-size:0.75rem; color:#FFE500; text-align:center; margin-bottom:1rem; opacity:0.8; }
       .zona-grid { display:grid; grid-template-columns:1fr 1.6fr 1fr; gap:0.5rem; margin-bottom:0.5rem; }
     </style>
 
@@ -1112,7 +1118,17 @@ footer {
           </div>
           <button onclick="resetZona()" style="background:transparent; border:1px solid rgba(250,250,250,0.2); color:var(--blanco); font-size:0.7rem; padding:0.4rem 0.8rem; cursor:pointer; font-family:'Space Mono',monospace; letter-spacing:0.1em;">✕ Cambiar</button>
         </div>
-        <div id="zona-perks" style="margin-bottom:1.5rem;"></div>
+        <div id="zona-perks" style="margin-bottom:1rem;"></div>
+
+      <!-- Selector de cantidad (solo para zonas no-mesa) -->
+      <div id="cantidad-wrap" style="display:none; border-top:1px solid rgba(250,250,250,0.08); padding-top:1rem; margin-bottom:1rem;">
+        <p style="font-family:'Space Mono',monospace;font-size:0.65rem;letter-spacing:0.18em;text-transform:uppercase;color:var(--amarillo);margin-bottom:0.75rem;">Cantidad de entradas</p>
+        <div class="cantidad-selector">
+          <button class="cantidad-btn" onclick="cambiarCantidad(-1)">−</button>
+          <span class="cantidad-num" id="cantidad-num">1</span>
+          <button class="cantidad-btn" onclick="cambiarCantidad(1)">+</button>
+        </div>
+        <p class="precio-total" id="precio-total"></p>
       </div>
 
       <div class="codigo-field">
@@ -1167,7 +1183,7 @@ footer {
 <script>
 // ── TICKER ──
 const tickerMsgs = [
-  'Guatemala Music Festival','◆','Noviembre 2026','◆','12 Artistas','◆',
+  'Guatemala Music Festival','◆','Enero 2027','◆','12 Artistas','◆',
   '12 horas de música','◆','Pura vibra','◆','Talento guatemalteco','◆',
   'Fecha por confirmar','◆','Tickets próximamente','◆'
 ];
@@ -1179,7 +1195,7 @@ for(let i=0;i<4;i++) tickerMsgs.forEach((m,j) => {
 tt.innerHTML = tickerHTML;
 
 // ── VIBE STRIP ──
-const vibeMsgs = ['MÚSICA EN VIVO','●','TALENTO LOCAL','●','12 HORAS DE MÚSICA','●','NOVIEMBRE 2026','●','GUATEMALA','●','FESTIVAL','●'];
+const vibeMsgs = ['MÚSICA EN VIVO','●','TALENTO LOCAL','●','12 HORAS DE MÚSICA','●','ENERO 2027','●','GUATEMALA','●','FESTIVAL','●'];
 const vt = document.getElementById('vibeTrack');
 let vibeHTML = '';
 for(let i=0;i<4;i++) vibeMsgs.forEach((m,j) => {
@@ -1353,6 +1369,8 @@ const CAPACIDAD_ZONAS = {
   'general': { label: 'General',           total: 112 }
 };
 
+let disponibilidadActual = {};
+
 async function cargarDisponibilidad() {
   try {
     const response = await fetch(SCRIPT_URL, {
@@ -1363,6 +1381,7 @@ async function cargarDisponibilidad() {
     });
     const data = await response.json();
     if (data.success) {
+      disponibilidadActual = data.disponibilidad;
       actualizarMapaDisponibilidad(data.disponibilidad);
     }
   } catch(err) {
@@ -1377,83 +1396,94 @@ function actualizarMapaDisponibilidad(disponibilidad) {
     'Platea':            'platea',
     'General':           'general'
   };
-
-  for (const [label, info] of Object.entries(disponibilidad)) {
-    const zonaKey = mapZona[label];
+  for (var label in disponibilidad) {
+    var info = disponibilidad[label];
+    var zonaKey = mapZona[label];
     if (!zonaKey) continue;
-
-    const disponibles = info.disponibles;
-    const total = info.total;
-    const pct = Math.round((disponibles / total) * 100);
-
-    // Actualizar badge de disponibilidad en cada botón
+    var disponibles = info.disponibles;
+    var total = info.total;
+    var pct = Math.round((disponibles / total) * 100);
     document.querySelectorAll('.zona-btn[data-zona="' + zonaKey + '"]').forEach(function(btn) {
-      // Quitar badge anterior si existe
-      var oldBadge = btn.querySelector('.disponibilidad-badge');
+      var oldBadge = btn.querySelector('.zona-disponibilidad');
       if (oldBadge) oldBadge.remove();
-
       var badge = document.createElement('div');
-      badge.className = 'disponibilidad-badge';
-
+      badge.className = 'zona-disponibilidad';
       if (disponibles <= 0) {
-        // AGOTADO
-        badge.textContent = 'AGOTADO';
-        badge.style.cssText = 'font-size:0.6rem;font-family:Space Mono,monospace;letter-spacing:0.1em;color:#FF2D6B;margin-top:0.3rem;font-weight:bold;';
-        btn.style.opacity = '0.5';
+        badge.innerHTML = '<strong style="color:#FF2D6B;">AGOTADO</strong>';
+        btn.style.opacity = '0.4';
         btn.style.pointerEvents = 'none';
         btn.dataset.agotado = 'true';
       } else if (pct <= 20) {
-        // ÚLTIMOS LUGARES
-        badge.textContent = '⚡ Solo ' + disponibles + ' disponibles';
-        badge.style.cssText = 'font-size:0.6rem;font-family:Space Mono,monospace;letter-spacing:0.08em;color:#FF5C00;margin-top:0.3rem;';
+        badge.innerHTML = '⚡ Solo ' + disponibles + ' disponibles';
+        badge.style.color = '#FF5C00';
       } else {
-        // DISPONIBLE
         badge.textContent = disponibles + ' / ' + total + ' disponibles';
-        badge.style.cssText = 'font-size:0.6rem;font-family:Space Mono,monospace;letter-spacing:0.08em;opacity:0.5;color:inherit;margin-top:0.3rem;';
       }
-
       btn.appendChild(badge);
     });
   }
 }
 
-// Cargar disponibilidad al iniciar
-window.addEventListener('load', function() {
-  cargarDisponibilidad();
-});
+// ── MAPA INTERACTIVO ──
 const zonaInfo = {
-  mesa:    { label: 'Mesa VIP Completa', precioQ: 'Q3,000', precioUSD: '390.00', perks: ['Mesa rectangular para 10 personas', 'Servicio de mesero incluido', 'Vista lateral al escenario', 'Área exclusiva con acceso controlado', 'QR de entrada en tu email'] },
-  vip:     { label: 'VIP de Pie', precioQ: 'Q275', precioUSD: '36.00', perks: ['Zona centro frente al escenario', '100% de visibilidad', 'La mejor energía del evento', 'QR de entrada en tu email'] },
-  platea:  { label: 'Platea', precioQ: 'Q225', precioUSD: '29.00', perks: ['Silla asignada', 'Vista directa al escenario', '88% de visibilidad', 'QR de entrada en tu email'] },
-  general: { label: 'General', precioQ: 'Q175', precioUSD: '23.00', perks: ['Acceso completo al festival', '12 artistas en vivo', 'Zona de pie al fondo', 'QR de entrada en tu email'] }
+  mesa:    { label: 'Mesa VIP Completa', precioQ: 'Q3,000', precioUSD: '390.00', precioNum: 3000, esMesa: true,  perks: ['Mesa rectangular para 10 personas', 'Servicio de mesero incluido', 'Vista lateral al escenario', 'Área exclusiva con acceso controlado', 'QR de entrada en tu email'] },
+  vip:     { label: 'VIP de Pie',        precioQ: 'Q275',   precioUSD: '36.00',  precioNum: 275,  esMesa: false, perks: ['Zona centro frente al escenario', '100% de visibilidad', 'La mejor energía del evento', 'QR de entrada en tu email'] },
+  platea:  { label: 'Platea',            precioQ: 'Q225',   precioUSD: '29.00',  precioNum: 225,  esMesa: false, perks: ['Silla asignada', 'Vista directa al escenario', '88% de visibilidad', 'QR de entrada en tu email'] },
+  general: { label: 'General',           precioQ: 'Q175',   precioUSD: '23.00',  precioNum: 175,  esMesa: false, perks: ['Acceso completo al festival', '12 artistas en vivo', 'Zona de pie al fondo', 'QR de entrada en tu email'] }
 };
 
 let zonaActual = null;
-let pagoCompletado = false; // bloqueo permanente tras pago exitoso
+let cantidadActual = 1;
+let pagoCompletado = false;
+
+function cambiarCantidad(delta) {
+  if (!zonaActual) return;
+  var info = zonaInfo[zonaActual];
+  var disponibles = disponibilidadActual[info.label] ? disponibilidadActual[info.label].disponibles : 999;
+  var max = Math.min(disponibles, 10);
+  cantidadActual = Math.max(1, Math.min(max, cantidadActual + delta));
+  document.getElementById('cantidad-num').textContent = cantidadActual;
+  var totalQ = Math.round(info.precioNum * cantidadActual);
+  var totalUSD = (parseFloat(info.precioUSD) * cantidadActual).toFixed(2);
+  document.getElementById('precio-total').textContent = cantidadActual + ' × ' + info.precioQ + ' = Q' + totalQ.toLocaleString() + ' / $' + totalUSD + ' USD';
+}
 
 window.addEventListener('load', function() {
+  cargarDisponibilidad();
+
   var btns = document.querySelectorAll('.zona-btn');
   btns.forEach(function(btn) {
     btn.addEventListener('click', function() {
-      if (pagoCompletado) return; // bloquear si ya pagó
+      if (pagoCompletado) return;
+      if (this.dataset.agotado === 'true') return;
+
       var zona = this.getAttribute('data-zona');
       zonaActual = zona;
+      cantidadActual = 1;
       var info = zonaInfo[zona];
 
-      // Resaltar zona
       btns.forEach(function(b) { b.style.opacity = '0.4'; });
       document.querySelectorAll('[data-zona="' + zona + '"]').forEach(function(b) { b.style.opacity = '1'; });
 
-      // Mostrar info
       document.getElementById('zona-nombre').textContent = info.label;
-      document.getElementById('zona-precio-display').textContent = info.precioQ + ' / $' + info.precioUSD + ' USD';
+      document.getElementById('zona-precio-display').textContent = info.precioQ + ' / $' + info.precioUSD + ' USD por persona';
       document.getElementById('zona-perks').innerHTML = info.perks.map(function(p) {
         return '<div class="ticket-perk">' + p + '</div>';
       }).join('');
 
+      // Mostrar/ocultar selector de cantidad
+      var cantidadWrap = document.getElementById('cantidad-wrap');
+      if (info.esMesa) {
+        cantidadWrap.style.display = 'none';
+        cantidadActual = 1;
+      } else {
+        cantidadWrap.style.display = 'block';
+        document.getElementById('cantidad-num').textContent = '1';
+        document.getElementById('precio-total').textContent = '1 × ' + info.precioQ + ' = ' + info.precioQ + ' / $' + info.precioUSD + ' USD';
+      }
+
       document.getElementById('zona-seleccionada').style.display = 'block';
 
-      // Reiniciar PayPal
       pagoProcesado = false;
       var container = document.getElementById('paypal-button-container');
       container.innerHTML = '';
@@ -1471,7 +1501,10 @@ window.addEventListener('load', function() {
 function resetZona() {
   if (pagoCompletado) return;
   zonaActual = null;
-  document.querySelectorAll('.zona-btn').forEach(function(b) { b.style.opacity = '1'; });
+  cantidadActual = 1;
+  document.querySelectorAll('.zona-btn').forEach(function(b) {
+    if (b.dataset.agotado !== 'true') b.style.opacity = '1';
+  });
   document.getElementById('zona-seleccionada').style.display = 'none';
   document.getElementById('paypal-button-container').innerHTML = '';
   pagoProcesado = false;
@@ -1486,8 +1519,13 @@ function renderPayPal(precioUSD, label) {
       var email = document.getElementById('emailFan').value.trim();
       if (!nombre || !email) { alert('Por favor ingresa tu nombre y correo electrónico antes de pagar.'); return false; }
       if (!email.includes('@')) { alert('Por favor ingresa un correo electrónico válido.'); return false; }
+      var info = zonaInfo[zonaActual];
+      var totalUSD = (parseFloat(info.precioUSD) * cantidadActual).toFixed(2);
       return actions.order.create({
-        purchase_units: [{ description: label + ' — Guatemala Music Festival 2026', amount: { value: precioUSD, currency_code: 'USD' } }]
+        purchase_units: [{ 
+          description: cantidadActual + 'x ' + label + ' — GMF 2026', 
+          amount: { value: totalUSD, currency_code: 'USD' } 
+        }]
       });
     },
     onApprove: async function(data, actions) {
@@ -1497,20 +1535,40 @@ function renderPayPal(precioUSD, label) {
       document.getElementById('paypal-processing').style.display = 'block';
       try {
         await actions.order.capture();
-        pagoCompletado = true; // bloqueo permanente
+        pagoCompletado = true;
         var nombre = document.getElementById('nombreFan').value.trim();
         var email = document.getElementById('emailFan').value.trim();
         var codigo_artista = document.getElementById('codigoArtista').value.trim().toUpperCase();
-        var qr_code = generarCodigoQR();
         var fecha = new Date().toLocaleDateString('es-GT');
         var zona = zonaInfo[zonaActual];
-        await guardarTicketEnSheets({ qr_code, nombre, email, codigo_artista: codigo_artista || 'N/A', fecha, monto: zona.precioQ + ' / $' + precioUSD + ' USD', zona: zona.label });
-        await emailjs.send('service_9firke7', 'template_6rnlvlg', { email, nombre, qr_code, codigo_artista: codigo_artista || 'N/A', fecha });
-        mostrarConfirmacion(nombre, email, qr_code);
+        var totalUSD = (parseFloat(zona.precioUSD) * cantidadActual).toFixed(2);
+        var qr_codes = [];
+
+        // Generar un QR por entrada
+        for (var i = 0; i < cantidadActual; i++) {
+          var qr_code = generarCodigoQR();
+          qr_codes.push(qr_code);
+          await guardarTicketEnSheets({
+            qr_code, nombre, email,
+            codigo_artista: codigo_artista || 'N/A',
+            fecha,
+            monto: zona.precioQ + ' / $' + zona.precioUSD + ' USD',
+            zona: zona.label
+          });
+        }
+
+        // Mandar email con todos los QR
+        await emailjs.send('service_9firke7', 'template_6rnlvlg', {
+          email, nombre,
+          qr_code: qr_codes.join(' | '),
+          codigo_artista: codigo_artista || 'N/A',
+          fecha
+        });
+
+        mostrarConfirmacionMultiple(nombre, email, qr_codes, zona.label);
       } catch(err) {
         console.error('Error:', err);
-        var qr_code = generarCodigoQR();
-        mostrarConfirmacion(document.getElementById('nombreFan').value.trim(), document.getElementById('emailFan').value.trim(), qr_code);
+        mostrarConfirmacion(document.getElementById('nombreFan').value.trim(), document.getElementById('emailFan').value.trim(), generarCodigoQR());
       }
     },
     onError: function() { pagoProcesado = false; document.getElementById('paypal-button-container').style.display = 'block'; document.getElementById('paypal-processing').style.display = 'none'; },
@@ -1518,6 +1576,26 @@ function renderPayPal(precioUSD, label) {
   }).render('#paypal-button-container');
 }
 
+function mostrarConfirmacionMultiple(nombre, email, qr_codes, zonaLabel) {
+  var qrsHTML = qr_codes.map(function(qr, i) {
+    var qr_image = 'https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=' + qr + '&bgcolor=060608&color=FFE500';
+    return '<div style="text-align:center;display:inline-block;margin:0.5rem;">' +
+      '<img src="' + qr_image + '" style="width:120px;height:120px;display:block;margin:0 auto 0.3rem;"/>' +
+      '<p style="font-family:Space Mono,monospace;font-size:0.6rem;color:var(--amarillo);letter-spacing:0.08em;">Entrada ' + (i+1) + '</p>' +
+      '<p style="font-family:Space Mono,monospace;font-size:0.55rem;opacity:0.5;">' + qr + '</p>' +
+      '</div>';
+  }).join('');
+
+  document.getElementById('ticket-box-content').innerHTML =
+    '<div style="text-align:center;padding:2rem 0;">' +
+    '<div style="font-size:2.5rem;margin-bottom:0.75rem;">🎉</div>' +
+    '<h3 style="font-family:Bebas Neue,sans-serif;font-size:1.8rem;color:var(--amarillo);letter-spacing:0.05em;margin-bottom:0.5rem;">¡' + qr_codes.length + ' ENTRADAS CONFIRMADAS!</h3>' +
+    '<p style="opacity:0.6;margin-bottom:0.5rem;">Zona: <strong style="color:var(--blanco);">' + zonaLabel + '</strong></p>' +
+    '<p style="opacity:0.6;margin-bottom:1.5rem;font-size:0.85rem;">Los códigos QR fueron enviados a <strong style="color:var(--blanco);">' + email + '</strong></p>' +
+    '<div style="display:flex;flex-wrap:wrap;justify-content:center;gap:0.5rem;margin-bottom:1.5rem;">' + qrsHTML + '</div>' +
+    '<p style="font-size:0.7rem;opacity:0.35;font-family:Space Mono,monospace;">Guarda estos QR — los necesitas en la entrada del evento</p>' +
+    '</div>';
+}
 // ── REVEAL ON SCROLL ──
 const reveals = document.querySelectorAll('.reveal');
 const obs = new IntersectionObserver(entries => {
