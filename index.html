@@ -1298,6 +1298,22 @@ function generarCodigoQR() {
 
 async function guardarTicketEnSheets(datos) {
   try {
+    const response = await fetch(SCRIPT_URL, {
+      method: 'POST',
+      mode: 'cors',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'guardar_ticket', ...datos })
+    });
+    const result = await response.json();
+    if (!result.success && result.error === 'agotado') {
+      alert('Lo sentimos, esta zona ya no tiene lugares disponibles.');
+      pagoCompletado = false;
+      pagoProcesado = false;
+      return false;
+    }
+    return true;
+  } catch(err) {
+    // Fallback no-cors si cors falla
     await fetch(SCRIPT_URL, {
       method: 'POST',
       mode: 'no-cors',
@@ -1305,9 +1321,6 @@ async function guardarTicketEnSheets(datos) {
       body: JSON.stringify({ action: 'guardar_ticket', ...datos })
     });
     return true;
-  } catch(err) {
-    console.error('Error guardando en Sheets:', err);
-    return false;
   }
 }
 
@@ -1332,7 +1345,82 @@ function mostrarConfirmacion(nombre, email, qr_code) {
 
 // ── PAYPAL STANDARD BUTTON ──
 
-// ── MAPA INTERACTIVO ──
+// ── DISPONIBILIDAD ──
+const CAPACIDAD_ZONAS = {
+  'mesa':    { label: 'Mesa VIP Completa', total: 6 },
+  'vip':     { label: 'VIP de Pie',        total: 80 },
+  'platea':  { label: 'Platea',            total: 80 },
+  'general': { label: 'General',           total: 112 }
+};
+
+async function cargarDisponibilidad() {
+  try {
+    const response = await fetch(SCRIPT_URL, {
+      method: 'POST',
+      mode: 'cors',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'disponibilidad' })
+    });
+    const data = await response.json();
+    if (data.success) {
+      actualizarMapaDisponibilidad(data.disponibilidad);
+    }
+  } catch(err) {
+    console.log('No se pudo cargar disponibilidad:', err);
+  }
+}
+
+function actualizarMapaDisponibilidad(disponibilidad) {
+  const mapZona = {
+    'Mesa VIP Completa': 'mesa',
+    'VIP de Pie':        'vip',
+    'Platea':            'platea',
+    'General':           'general'
+  };
+
+  for (const [label, info] of Object.entries(disponibilidad)) {
+    const zonaKey = mapZona[label];
+    if (!zonaKey) continue;
+
+    const disponibles = info.disponibles;
+    const total = info.total;
+    const pct = Math.round((disponibles / total) * 100);
+
+    // Actualizar badge de disponibilidad en cada botón
+    document.querySelectorAll('.zona-btn[data-zona="' + zonaKey + '"]').forEach(function(btn) {
+      // Quitar badge anterior si existe
+      var oldBadge = btn.querySelector('.disponibilidad-badge');
+      if (oldBadge) oldBadge.remove();
+
+      var badge = document.createElement('div');
+      badge.className = 'disponibilidad-badge';
+
+      if (disponibles <= 0) {
+        // AGOTADO
+        badge.textContent = 'AGOTADO';
+        badge.style.cssText = 'font-size:0.6rem;font-family:Space Mono,monospace;letter-spacing:0.1em;color:#FF2D6B;margin-top:0.3rem;font-weight:bold;';
+        btn.style.opacity = '0.5';
+        btn.style.pointerEvents = 'none';
+        btn.dataset.agotado = 'true';
+      } else if (pct <= 20) {
+        // ÚLTIMOS LUGARES
+        badge.textContent = '⚡ Solo ' + disponibles + ' disponibles';
+        badge.style.cssText = 'font-size:0.6rem;font-family:Space Mono,monospace;letter-spacing:0.08em;color:#FF5C00;margin-top:0.3rem;';
+      } else {
+        // DISPONIBLE
+        badge.textContent = disponibles + ' / ' + total + ' disponibles';
+        badge.style.cssText = 'font-size:0.6rem;font-family:Space Mono,monospace;letter-spacing:0.08em;opacity:0.5;color:inherit;margin-top:0.3rem;';
+      }
+
+      btn.appendChild(badge);
+    });
+  }
+}
+
+// Cargar disponibilidad al iniciar
+window.addEventListener('load', function() {
+  cargarDisponibilidad();
+});
 const zonaInfo = {
   mesa:    { label: 'Mesa VIP Completa', precioQ: 'Q3,000', precioUSD: '390.00', perks: ['Mesa rectangular para 10 personas', 'Servicio de mesero incluido', 'Vista lateral al escenario', 'Área exclusiva con acceso controlado', 'QR de entrada en tu email'] },
   vip:     { label: 'VIP de Pie', precioQ: 'Q275', precioUSD: '36.00', perks: ['Zona centro frente al escenario', '100% de visibilidad', 'La mejor energía del evento', 'QR de entrada en tu email'] },
@@ -1341,11 +1429,13 @@ const zonaInfo = {
 };
 
 let zonaActual = null;
+let pagoCompletado = false; // bloqueo permanente tras pago exitoso
 
 window.addEventListener('load', function() {
   var btns = document.querySelectorAll('.zona-btn');
   btns.forEach(function(btn) {
     btn.addEventListener('click', function() {
+      if (pagoCompletado) return; // bloquear si ya pagó
       var zona = this.getAttribute('data-zona');
       zonaActual = zona;
       var info = zonaInfo[zona];
@@ -1379,6 +1469,7 @@ window.addEventListener('load', function() {
 });
 
 function resetZona() {
+  if (pagoCompletado) return;
   zonaActual = null;
   document.querySelectorAll('.zona-btn').forEach(function(b) { b.style.opacity = '1'; });
   document.getElementById('zona-seleccionada').style.display = 'none';
@@ -1406,6 +1497,7 @@ function renderPayPal(precioUSD, label) {
       document.getElementById('paypal-processing').style.display = 'block';
       try {
         await actions.order.capture();
+        pagoCompletado = true; // bloqueo permanente
         var nombre = document.getElementById('nombreFan').value.trim();
         var email = document.getElementById('emailFan').value.trim();
         var codigo_artista = document.getElementById('codigoArtista').value.trim().toUpperCase();
