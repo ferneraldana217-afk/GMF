@@ -1039,45 +1039,97 @@ footer {
   <p class="notify-sub reveal">Las entradas son limitadas. Compra la tuya antes de que se agoten.</p>
 
   <div class="ticket-box reveal" id="ticket-box-content">
-    <div class="ticket-precio">
-      <span class="ticket-moneda">Q</span>200
-    </div>
-    <p class="ticket-equiv">$26.00 USD · Entrada General</p>
 
-    <div class="ticket-perks">
-      <div class="ticket-perk">Acceso completo al festival</div>
-      <div class="ticket-perk">12 artistas en vivo</div>
-      <div class="ticket-perk">12:00 PM — 12:00 AM · Noviembre 2026</div>
-      <div class="ticket-perk">QR de entrada en tu email</div>
+    <!-- MAPA INTERACTIVO -->
+    <div style="margin-bottom: 2rem;">
+      <p style="font-family:'Space Mono',monospace; font-size:0.65rem; letter-spacing:0.2em; text-transform:uppercase; color:var(--amarillo); margin-bottom:1rem; text-align:center;">Selecciona tu zona</p>
+
+      <!-- Escenario -->
+      <div style="background:#1a1a2e; border:1.5px solid #FFE500; padding:0.75rem; text-align:center; margin-bottom:0.5rem; border-radius:2px;">
+        <span style="font-family:'Bebas Neue',sans-serif; font-size:1.1rem; letter-spacing:0.15em; color:#FFE500;">ESCENARIO</span>
+      </div>
+
+      <!-- Fila VIP: mesas + VIP de pie -->
+      <div style="display:grid; grid-template-columns:1fr 1.6fr 1fr; gap:0.5rem; margin-bottom:0.5rem;">
+        <!-- Mesa VIP izq -->
+        <div class="zona-btn" data-zona="mesa" data-precio="390" data-precioq="Q3,000" data-label="Mesa VIP Completa" data-color="#C9A84C"
+          style="background:rgba(201,168,76,0.15); border:2px solid #C9A84C; padding:1rem 0.5rem; text-align:center; cursor:pointer; border-radius:2px; transition:all 0.2s;">
+          <div style="font-family:'Bebas Neue',sans-serif; font-size:0.9rem; letter-spacing:0.1em; color:#C9A84C;">MESA VIP</div>
+          <div style="font-size:0.65rem; color:#C9A84C; opacity:0.8; font-family:'Space Mono',monospace; margin-top:0.2rem;">Q3,000</div>
+          <div style="font-size:0.6rem; opacity:0.5; margin-top:0.2rem;">Mesa completa</div>
+        </div>
+        <!-- VIP de pie centro -->
+        <div class="zona-btn" data-zona="vip" data-precio="36" data-precioq="Q275" data-label="VIP de Pie" data-color="#FF2D6B"
+          style="background:rgba(255,45,107,0.15); border:2px solid #FF2D6B; padding:1rem 0.5rem; text-align:center; cursor:pointer; border-radius:2px; transition:all 0.2s;">
+          <div style="font-family:'Bebas Neue',sans-serif; font-size:0.9rem; letter-spacing:0.1em; color:#FF2D6B;">VIP DE PIE</div>
+          <div style="font-size:0.65rem; color:#FF2D6B; opacity:0.8; font-family:'Space Mono',monospace; margin-top:0.2rem;">Q275</div>
+          <div style="font-size:0.6rem; opacity:0.5; margin-top:0.2rem;">100% visibilidad</div>
+        </div>
+        <!-- Mesa VIP der -->
+        <div class="zona-btn" data-zona="mesa" data-precio="390" data-precioq="Q3,000" data-label="Mesa VIP Completa" data-color="#C9A84C"
+          style="background:rgba(201,168,76,0.15); border:2px solid #C9A84C; padding:1rem 0.5rem; text-align:center; cursor:pointer; border-radius:2px; transition:all 0.2s;">
+          <div style="font-family:'Bebas Neue',sans-serif; font-size:0.9rem; letter-spacing:0.1em; color:#C9A84C;">MESA VIP</div>
+          <div style="font-size:0.65rem; color:#C9A84C; opacity:0.8; font-family:'Space Mono',monospace; margin-top:0.2rem;">Q3,000</div>
+          <div style="font-size:0.6rem; opacity:0.5; margin-top:0.2rem;">Mesa completa</div>
+        </div>
+      </div>
+
+      <!-- Platea -->
+      <div class="zona-btn" data-zona="platea" data-precio="29" data-precioq="Q225" data-label="Platea" data-color="#00C2FF"
+        style="background:rgba(0,194,255,0.12); border:2px solid #00C2FF; padding:0.9rem; text-align:center; cursor:pointer; border-radius:2px; margin-bottom:0.5rem; transition:all 0.2s;">
+        <div style="font-family:'Bebas Neue',sans-serif; font-size:0.9rem; letter-spacing:0.1em; color:#00C2FF;">PLATEA — SILLAS ASIGNADAS</div>
+        <div style="font-size:0.65rem; color:#00C2FF; opacity:0.8; font-family:'Space Mono',monospace; margin-top:0.2rem;">Q225 por persona</div>
+      </div>
+
+      <!-- General -->
+      <div class="zona-btn" data-zona="general" data-precio="23" data-precioq="Q175" data-label="General" data-color="#1db954"
+        style="background:rgba(30,185,84,0.12); border:2px solid #1db954; padding:0.9rem; text-align:center; cursor:pointer; border-radius:2px; transition:all 0.2s;">
+        <div style="font-family:'Bebas Neue',sans-serif; font-size:0.9rem; letter-spacing:0.1em; color:#1db954;">GENERAL — DE PIE</div>
+        <div style="font-size:0.65rem; color:#1db954; opacity:0.8; font-family:'Space Mono',monospace; margin-top:0.2rem;">Q175 por persona</div>
+      </div>
+
+      <!-- Leyenda -->
+      <div style="display:flex; gap:1rem; flex-wrap:wrap; justify-content:center; margin-top:1rem;">
+        <span style="font-size:0.6rem; font-family:'Space Mono',monospace; opacity:0.35; color:var(--blanco);">🟡 Mesa VIP · 🔴 VIP Pie · 🔵 Platea · 🟢 General</span>
+      </div>
     </div>
 
-    <div class="codigo-field">
-      <span class="codigo-label">Tu nombre completo *</span>
-      <input type="text" class="codigo-input" id="nombreFan" placeholder="Ingresa tu nombre completo" maxlength="60">
+    <!-- ZONA SELECCIONADA -->
+    <div id="zona-seleccionada" style="display:none;">
+      <div style="border-top:1px solid rgba(250,250,250,0.1); padding-top:1.5rem; margin-bottom:1.5rem;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
+          <div>
+            <p id="zona-nombre" style="font-family:'Bebas Neue',sans-serif; font-size:1.4rem; letter-spacing:0.08em; color:var(--amarillo);"></p>
+            <p id="zona-precio-display" style="font-family:'Space Mono',monospace; font-size:0.75rem; opacity:0.6;"></p>
+          </div>
+          <button onclick="resetZona()" style="background:transparent; border:1px solid rgba(250,250,250,0.2); color:var(--blanco); font-size:0.7rem; padding:0.4rem 0.8rem; cursor:pointer; font-family:'Space Mono',monospace; letter-spacing:0.1em;">✕ Cambiar</button>
+        </div>
+        <div id="zona-perks" style="margin-bottom:1.5rem;"></div>
+      </div>
+
+      <div class="codigo-field">
+        <span class="codigo-label">Tu nombre completo *</span>
+        <input type="text" class="codigo-input" id="nombreFan" placeholder="Ingresa tu nombre completo" maxlength="60">
+      </div>
+
+      <div class="codigo-field">
+        <span class="codigo-label">Tu correo electrónico *</span>
+        <input type="email" class="codigo-input" id="emailFan" placeholder="Aquí recibirás tu QR de entrada" maxlength="80">
+        <p class="codigo-nota">Te enviaremos tu código QR a este correo inmediatamente después del pago.</p>
+      </div>
+
+      <div class="codigo-field">
+        <span class="codigo-label">Código de artista (opcional)</span>
+        <input type="text" class="codigo-input" id="codigoArtista" placeholder="Ingresa el código de tu artista" maxlength="20">
+        <p class="codigo-nota">Si un artista te compartió su código, ingrésalo aquí. El 10% va directo a ellos.</p>
+      </div>
+
+      <div id="paypal-button-container"></div>
+      <div id="paypal-processing" style="display:none; text-align:center; padding:1rem;">
+        <p style="font-family:'Space Mono',monospace; font-size:0.75rem; color:var(--amarillo); letter-spacing:0.1em;">⏳ PROCESANDO TU PAGO...</p>
+      </div>
     </div>
 
-    <div class="codigo-field">
-      <span class="codigo-label">Tu correo electrónico *</span>
-      <input type="email" class="codigo-input" id="emailFan" placeholder="Aquí recibirás tu QR de entrada" maxlength="80">
-      <p class="codigo-nota">Te enviaremos tu código QR a este correo inmediatamente después del pago.</p>
-    </div>
-
-    <div class="codigo-field">
-      <span class="codigo-label">Código de artista (opcional)</span>
-      <input
-        type="text"
-        class="codigo-input"
-        id="codigoArtista"
-        placeholder="Ingresa el código de tu artista"
-        maxlength="20"
-      >
-      <p class="codigo-nota">Si un artista te compartió su código, ingrésalo aquí. El 10% va directo a ellos.</p>
-    </div>
-
-    <div id="paypal-button-container"></div>
-    <div id="paypal-processing" style="display:none; text-align:center; padding:1rem;">
-      <p style="font-family:'Space Mono',monospace; font-size:0.75rem; color:var(--amarillo); letter-spacing:0.1em;">⏳ PROCESANDO TU PAGO...</p>
-    </div>
   </div>
 </section>
 
