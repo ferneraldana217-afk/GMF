@@ -1541,31 +1541,65 @@ function renderPayPal(precioUSD, label) {
         var codigo_artista = document.getElementById('codigoArtista').value.trim().toUpperCase();
         var fecha = new Date().toLocaleDateString('es-GT');
         var zona = zonaInfo[zonaActual];
-        var totalUSD = (parseFloat(zona.precioUSD) * cantidadActual).toFixed(2);
         var qr_codes = [];
+        var cantidadReal = zona.esMesa ? 1 : cantidadActual;
 
-        // Generar un QR por entrada
-        for (var i = 0; i < cantidadActual; i++) {
+        // Mesa VIP = 1 QR para toda la mesa. Otros = 1 QR por persona.
+        for (var i = 0; i < cantidadReal; i++) {
           var qr_code = generarCodigoQR();
           qr_codes.push(qr_code);
           await guardarTicketEnSheets({
             qr_code, nombre, email,
             codigo_artista: codigo_artista || 'N/A',
             fecha,
-            monto: zona.precioQ + ' / $' + zona.precioUSD + ' USD',
+            monto: zona.esMesa ? zona.precioQ + ' (mesa completa 10 pers.)' : zona.precioQ + ' / $' + zona.precioUSD + ' USD',
             zona: zona.label
           });
         }
 
-        // Mandar email con todos los QR
+        var qr1 = qr_codes[0] || '';
+        var titulo_qr1 = esMesa ? 'Mesa VIP — 10 personas' : 'Entrada 1';
+        var instrucciones = esMesa
+          ? 'Presenta este QR en la entrada. Te entregaremos 10 brazaletes para todo tu grupo. Una sola persona puede llevar el QR.'
+          : (cantidadReal === 1
+            ? 'Presenta este código QR en la entrada del evento. Es de uso único — no lo compartas con nadie más.'
+            : 'Cada código QR es válido para una sola persona. Comparte cada entrada individualmente con tu acompañante antes del evento.');
+
+        // Construir entradas adicionales solo si hay más de 1
+        var entradas_adicionales = '';
+        if (cantidadReal > 1) {
+          var bloques = qr_codes.slice(1).map(function(qr, idx) {
+            var num = idx + 2;
+            var img = 'https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=' + qr + '&bgcolor=1a1a1f&color=FFE500';
+            var link = 'https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=' + qr + '&bgcolor=060608&color=FFE500';
+            return '<div style="background:#1a1a1f;border:2px solid #FF5C00;padding:25px;margin:0 0 15px;">' +
+              '<p style="color:#FFE500;font-size:10px;letter-spacing:2px;text-transform:uppercase;margin:0 0 15px;font-family:monospace;">Entrada ' + num + '</p>' +
+              '<img src="' + img + '" width="220" height="220" style="display:block;margin:0 auto 15px;" alt="QR ' + num + '"/>' +
+              '<p style="color:#aaa;font-family:monospace;font-size:13px;letter-spacing:3px;margin:0 0 15px;">' + qr + '</p>' +
+              '<a href="' + link + '" target="_blank" style="background:#FFE500;color:#060608;font-weight:900;padding:10px 22px;text-decoration:none;font-size:13px;display:inline-block;">📱 Ver QR en navegador</a>' +
+              '</div>';
+          }).join('');
+
+          entradas_adicionales =
+            '<div style="border-top:1px solid rgba(255,229,0,0.15);padding-top:20px;margin-top:5px;">' +
+            '<p style="color:#FFE500;font-size:11px;letter-spacing:2px;text-transform:uppercase;text-align:center;margin:0 0 15px;font-family:monospace;">🎟 Entradas adicionales (' + (cantidadReal - 1) + ' más)</p>' +
+            bloques +
+            '</div>';
+        }
+
         await emailjs.send('service_9firke7', 'template_6rnlvlg', {
           email, nombre,
-          qr_code: qr_codes.join(' | '),
+          zona: zona.label,
+          cantidad: cantidadReal.toString(),
+          titulo_qr1,
+          qr1,
+          entradas_adicionales,
+          instrucciones,
           codigo_artista: codigo_artista || 'N/A',
           fecha
         });
 
-        mostrarConfirmacionMultiple(nombre, email, qr_codes, zona.label);
+        mostrarConfirmacionMultiple(nombre, email, qr_codes, zona.label, esMesa);
       } catch(err) {
         console.error('Error:', err);
         mostrarConfirmacion(document.getElementById('nombreFan').value.trim(), document.getElementById('emailFan').value.trim(), generarCodigoQR());
@@ -1576,24 +1610,37 @@ function renderPayPal(precioUSD, label) {
   }).render('#paypal-button-container');
 }
 
-function mostrarConfirmacionMultiple(nombre, email, qr_codes, zonaLabel) {
+function mostrarConfirmacionMultiple(nombre, email, qr_codes, zonaLabel, esMesa) {
   var qrsHTML = qr_codes.map(function(qr, i) {
-    var qr_image = 'https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=' + qr + '&bgcolor=060608&color=FFE500';
-    return '<div style="text-align:center;display:inline-block;margin:0.5rem;">' +
-      '<img src="' + qr_image + '" style="width:120px;height:120px;display:block;margin:0 auto 0.3rem;"/>' +
-      '<p style="font-family:Space Mono,monospace;font-size:0.6rem;color:var(--amarillo);letter-spacing:0.08em;">Entrada ' + (i+1) + '</p>' +
-      '<p style="font-family:Space Mono,monospace;font-size:0.55rem;opacity:0.5;">' + qr + '</p>' +
+    var qr_image = 'https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=' + qr + '&bgcolor=060608&color=FFE500';
+    var qr_link = 'https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=' + qr + '&bgcolor=060608&color=FFE500';
+    var titulo = esMesa ? 'Mesa VIP — 10 personas' : ('Entrada ' + (i+1));
+    return '<div style="background:var(--negro);border:1.5px solid var(--naranja);padding:1rem;margin:0.5rem;display:inline-block;border-radius:2px;max-width:200px;vertical-align:top;">' +
+      '<p style="font-family:Space Mono,monospace;font-size:0.6rem;color:var(--amarillo);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:0.75rem;">' + titulo + '</p>' +
+      '<img src="' + qr_image + '" style="width:160px;height:160px;display:block;margin:0 auto 0.75rem;" alt="QR ' + (i+1) + '"/>' +
+      '<p style="font-family:Space Mono,monospace;font-size:0.6rem;opacity:0.5;margin-bottom:0.75rem;">' + qr + '</p>' +
+      '<a href="' + qr_link + '" target="_blank" style="background:var(--amarillo);color:var(--negro);font-family:Bebas Neue,sans-serif;font-size:0.8rem;letter-spacing:0.08em;padding:0.4rem 0.8rem;text-decoration:none;display:inline-block;">📱 Ver QR</a>' +
       '</div>';
   }).join('');
+
+  var titulo = esMesa
+    ? '¡MESA VIP CONFIRMADA!'
+    : (qr_codes.length === 1 ? '¡ENTRADA CONFIRMADA!' : '¡' + qr_codes.length + ' ENTRADAS CONFIRMADAS!');
+
+  var mensaje = esMesa
+    ? 'Presenta este QR en la entrada. Te daremos <strong style="color:var(--blanco);">10 brazaletes</strong> para tu grupo.'
+    : (qr_codes.length === 1
+        ? 'Tu código QR fue enviado a <strong style="color:var(--blanco);">' + email + '</strong>'
+        : 'Tus ' + qr_codes.length + ' códigos QR fueron enviados a <strong style="color:var(--blanco);">' + email + '</strong>. Comparte cada uno con tu acompañante.');
 
   document.getElementById('ticket-box-content').innerHTML =
     '<div style="text-align:center;padding:2rem 0;">' +
     '<div style="font-size:2.5rem;margin-bottom:0.75rem;">🎉</div>' +
-    '<h3 style="font-family:Bebas Neue,sans-serif;font-size:1.8rem;color:var(--amarillo);letter-spacing:0.05em;margin-bottom:0.5rem;">¡' + qr_codes.length + ' ENTRADAS CONFIRMADAS!</h3>' +
+    '<h3 style="font-family:Bebas Neue,sans-serif;font-size:1.8rem;color:var(--amarillo);letter-spacing:0.05em;margin-bottom:0.5rem;">' + titulo + '</h3>' +
     '<p style="opacity:0.6;margin-bottom:0.5rem;">Zona: <strong style="color:var(--blanco);">' + zonaLabel + '</strong></p>' +
-    '<p style="opacity:0.6;margin-bottom:1.5rem;font-size:0.85rem;">Los códigos QR fueron enviados a <strong style="color:var(--blanco);">' + email + '</strong></p>' +
+    '<p style="opacity:0.6;margin-bottom:1.5rem;font-size:0.85rem;">' + mensaje + '</p>' +
     '<div style="display:flex;flex-wrap:wrap;justify-content:center;gap:0.5rem;margin-bottom:1.5rem;">' + qrsHTML + '</div>' +
-    '<p style="font-size:0.7rem;opacity:0.35;font-family:Space Mono,monospace;">Guarda estos QR — los necesitas en la entrada del evento</p>' +
+    '<p style="font-size:0.7rem;opacity:0.35;font-family:Space Mono,monospace;">Cada QR es de uso único — no lo compartas con más de una persona</p>' +
     '</div>';
 }
 // ── REVEAL ON SCROLL ──
