@@ -1034,11 +1034,11 @@ footer {
 
 <!-- TICKETS -->
 <section class="section-tickets" id="notify">
-  <p class="section-label reveal" style="color:var(--amarillo);">Entradas</p>
-  <h2 class="notify-title reveal">Asegura<br>tu lugar<br><span style="color:var(--naranja);">ahora.</span></h2>
-  <p class="notify-sub reveal">Las entradas son limitadas. Compra la tuya antes de que se agoten.</p>
+  <p class="section-label" style="color:var(--amarillo);">Entradas</p>
+  <h2 class="notify-title">Asegura<br>tu lugar<br><span style="color:var(--naranja);">ahora.</span></h2>
+  <p class="notify-sub">Las entradas son limitadas. Compra la tuya antes de que se agoten.</p>
 
-  <div class="ticket-box reveal" id="ticket-box-content">
+  <div class="ticket-box" id="ticket-box-content" style="opacity:1; transform:none;">
 
     <!-- MAPA INTERACTIVO -->
     <div style="margin-bottom: 2rem;">
@@ -1052,21 +1052,21 @@ footer {
       <!-- Fila VIP: mesas + VIP de pie -->
       <div style="display:grid; grid-template-columns:1fr 1.6fr 1fr; gap:0.5rem; margin-bottom:0.5rem;">
         <!-- Mesa VIP izq -->
-        <div class="zona-btn" data-zona="mesa" data-precio="390" data-precioq="Q3,000" data-label="Mesa VIP Completa" data-color="#C9A84C"
+        <div class="zona-btn" style="position:relative; z-index:10; pointer-events:all;" data-zona="mesa" data-precio="390" data-precioq="Q3,000" data-label="Mesa VIP Completa" data-color="#C9A84C"
           style="background:rgba(201,168,76,0.15); border:2px solid #C9A84C; padding:1rem 0.5rem; text-align:center; cursor:pointer; border-radius:2px; transition:all 0.2s;">
           <div style="font-family:'Bebas Neue',sans-serif; font-size:0.9rem; letter-spacing:0.1em; color:#C9A84C;">MESA VIP</div>
           <div style="font-size:0.65rem; color:#C9A84C; opacity:0.8; font-family:'Space Mono',monospace; margin-top:0.2rem;">Q3,000</div>
           <div style="font-size:0.6rem; opacity:0.5; margin-top:0.2rem;">Mesa completa</div>
         </div>
         <!-- VIP de pie centro -->
-        <div class="zona-btn" data-zona="vip" data-precio="36" data-precioq="Q275" data-label="VIP de Pie" data-color="#FF2D6B"
+        <div class="zona-btn" style="position:relative; z-index:10; pointer-events:all;" data-zona="vip" data-precio="36" data-precioq="Q275" data-label="VIP de Pie" data-color="#FF2D6B"
           style="background:rgba(255,45,107,0.15); border:2px solid #FF2D6B; padding:1rem 0.5rem; text-align:center; cursor:pointer; border-radius:2px; transition:all 0.2s;">
           <div style="font-family:'Bebas Neue',sans-serif; font-size:0.9rem; letter-spacing:0.1em; color:#FF2D6B;">VIP DE PIE</div>
           <div style="font-size:0.65rem; color:#FF2D6B; opacity:0.8; font-family:'Space Mono',monospace; margin-top:0.2rem;">Q275</div>
           <div style="font-size:0.6rem; opacity:0.5; margin-top:0.2rem;">100% visibilidad</div>
         </div>
         <!-- Mesa VIP der -->
-        <div class="zona-btn" data-zona="mesa" data-precio="390" data-precioq="Q3,000" data-label="Mesa VIP Completa" data-color="#C9A84C"
+        <div class="zona-btn" style="position:relative; z-index:10; pointer-events:all;" data-zona="mesa" data-precio="390" data-precioq="Q3,000" data-label="Mesa VIP Completa" data-color="#C9A84C"
           style="background:rgba(201,168,76,0.15); border:2px solid #C9A84C; padding:1rem 0.5rem; text-align:center; cursor:pointer; border-radius:2px; transition:all 0.2s;">
           <div style="font-family:'Bebas Neue',sans-serif; font-size:0.9rem; letter-spacing:0.1em; color:#C9A84C;">MESA VIP</div>
           <div style="font-size:0.65rem; color:#C9A84C; opacity:0.8; font-family:'Space Mono',monospace; margin-top:0.2rem;">Q3,000</div>
@@ -1075,14 +1075,14 @@ footer {
       </div>
 
       <!-- Platea -->
-      <div class="zona-btn" data-zona="platea" data-precio="29" data-precioq="Q225" data-label="Platea" data-color="#00C2FF"
+      <div class="zona-btn" style="position:relative; z-index:10; pointer-events:all;" data-zona="platea" data-precio="29" data-precioq="Q225" data-label="Platea" data-color="#00C2FF"
         style="background:rgba(0,194,255,0.12); border:2px solid #00C2FF; padding:0.9rem; text-align:center; cursor:pointer; border-radius:2px; margin-bottom:0.5rem; transition:all 0.2s;">
         <div style="font-family:'Bebas Neue',sans-serif; font-size:0.9rem; letter-spacing:0.1em; color:#00C2FF;">PLATEA — SILLAS ASIGNADAS</div>
         <div style="font-size:0.65rem; color:#00C2FF; opacity:0.8; font-family:'Space Mono',monospace; margin-top:0.2rem;">Q225 por persona</div>
       </div>
 
       <!-- General -->
-      <div class="zona-btn" data-zona="general" data-precio="23" data-precioq="Q175" data-label="General" data-color="#1db954"
+      <div class="zona-btn" style="position:relative; z-index:10; pointer-events:all;" data-zona="general" data-precio="23" data-precioq="Q175" data-label="General" data-color="#1db954"
         style="background:rgba(30,185,84,0.12); border:2px solid #1db954; padding:0.9rem; text-align:center; cursor:pointer; border-radius:2px; transition:all 0.2s;">
         <div style="font-family:'Bebas Neue',sans-serif; font-size:0.9rem; letter-spacing:0.1em; color:#1db954;">GENERAL — DE PIE</div>
         <div style="font-size:0.65rem; color:#1db954; opacity:0.8; font-family:'Space Mono',monospace; margin-top:0.2rem;">Q175 por persona</div>
@@ -1333,7 +1333,6 @@ const zonaInfo = {
 };
 
 let zonaActual = null;
-let pagoProcesado = false;
 
 function initMapa() {
   document.querySelectorAll('.zona-btn').forEach(btn => {
