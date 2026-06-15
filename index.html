@@ -1323,111 +1323,106 @@ function mostrarConfirmacion(nombre, email, qr_code) {
 }
 
 // ── PAYPAL STANDARD BUTTON ──
-function initPayPal() {
-  if (typeof paypal === 'undefined') {
-    setTimeout(initPayPal, 300);
-    return;
-  }
+
+// ── MAPA INTERACTIVO ──
+const zonaInfo = {
+  mesa:    { label: 'Mesa VIP Completa', precioQ: 'Q3,000', precioUSD: '390.00', perks: ['Mesa rectangular para 10 personas', 'Servicio de mesero incluido', 'Mejor ubicación — vista lateral al escenario', 'Área exclusiva con acceso controlado', 'QR de entrada en tu email'] },
+  vip:     { label: 'VIP de Pie', precioQ: 'Q275', precioUSD: '36.00', perks: ['Zona centro frente al escenario', '100% de visibilidad', 'La mejor energía del evento', 'QR de entrada en tu email'] },
+  platea:  { label: 'Platea', precioQ: 'Q225', precioUSD: '29.00', perks: ['Silla asignada', 'Vista directa al escenario', '88% de visibilidad', 'QR de entrada en tu email'] },
+  general: { label: 'General', precioQ: 'Q175', precioUSD: '23.00', perks: ['Acceso completo al festival', '12 artistas en vivo', 'Zona de pie al fondo', 'QR de entrada en tu email'] }
+};
+
+let zonaActual = null;
+let pagoProcesado = false;
+
+function initMapa() {
+  document.querySelectorAll('.zona-btn').forEach(btn => {
+    btn.style.cursor = 'pointer';
+    btn.addEventListener('mouseenter', () => { btn.style.transform = 'scale(1.02)'; });
+    btn.addEventListener('mouseleave', () => { btn.style.transform = 'scale(1)'; });
+    btn.addEventListener('click', function() {
+      zonaActual = this.dataset.zona;
+      const info = zonaInfo[zonaActual];
+
+      document.querySelectorAll('.zona-btn').forEach(b => b.style.opacity = '0.4');
+      document.querySelectorAll(`.zona-btn[data-zona="${zonaActual}"]`).forEach(b => b.style.opacity = '1');
+
+      document.getElementById('zona-nombre').textContent = info.label;
+      document.getElementById('zona-precio-display').textContent = `${info.precioQ} / $${info.precioUSD} USD`;
+      document.getElementById('zona-perks').innerHTML = info.perks.map(p =>
+        `<div class="ticket-perk">${p}</div>`
+      ).join('');
+
+      document.getElementById('zona-seleccionada').style.display = 'block';
+
+      pagoProcesado = false;
+      const container = document.getElementById('paypal-button-container');
+      container.innerHTML = '';
+      container.style.display = 'block';
+      renderPayPal(info.precioUSD, info.label);
+
+      setTimeout(() => {
+        document.getElementById('zona-seleccionada').scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 200);
+    });
+  });
+}
+
+// Iniciar mapa cuando el DOM esté listo
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initMapa);
+} else {
+  initMapa();
+}
+
+function resetZona() {
+  zonaActual = null;
+  document.querySelectorAll('.zona-btn').forEach(b => b.style.opacity = '1');
+  document.getElementById('zona-seleccionada').style.display = 'none';
+  document.getElementById('paypal-button-container').innerHTML = '';
+  pagoProcesado = false;
+}
+
+function renderPayPal(precioUSD, label) {
+  if (typeof paypal === 'undefined') { setTimeout(() => renderPayPal(precioUSD, label), 300); return; }
 
   paypal.Buttons({
-    style: {
-      color: 'gold',
-      shape: 'rect',
-      label: 'pay',
-      height: 50
-    },
-
-    // Crear la orden
+    style: { color: 'gold', shape: 'rect', label: 'pay', height: 50 },
     createOrder: function(data, actions) {
       const nombre = document.getElementById('nombreFan').value.trim();
       const email = document.getElementById('emailFan').value.trim();
-
-      if (!nombre || !email) {
-        alert('Por favor ingresa tu nombre y correo electrónico antes de pagar.');
-        return false;
-      }
-      if (!email.includes('@')) {
-        alert('Por favor ingresa un correo electrónico válido.');
-        return false;
-      }
-
+      if (!nombre || !email) { alert('Por favor ingresa tu nombre y correo electrónico antes de pagar.'); return false; }
+      if (!email.includes('@')) { alert('Por favor ingresa un correo electrónico válido.'); return false; }
       return actions.order.create({
-        purchase_units: [{
-          description: 'Entrada General — Guatemala Music Festival 2026',
-          amount: {
-            value: '1.00',
-            currency_code: 'USD'
-          }
-        }]
+        purchase_units: [{ description: `${label} — Guatemala Music Festival 2026`, amount: { value: precioUSD, currency_code: 'USD' } }]
       });
     },
-
-    // Pago aprobado
     onApprove: async function(data, actions) {
       if (pagoProcesado) return;
       pagoProcesado = true;
-
-      // Mostrar processing
       document.getElementById('paypal-button-container').style.display = 'none';
       document.getElementById('paypal-processing').style.display = 'block';
-
       try {
-        const order = await actions.order.capture();
-
+        await actions.order.capture();
         const nombre = document.getElementById('nombreFan').value.trim();
         const email = document.getElementById('emailFan').value.trim();
         const codigo_artista = document.getElementById('codigoArtista').value.trim().toUpperCase();
         const qr_code = generarCodigoQR();
         const fecha = new Date().toLocaleDateString('es-GT');
-        const monto = '$26.00 USD';
-        const qr_image = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${qr_code}&bgcolor=060608&color=FFE500`;
-
-        // Guardar en Google Sheets
-        await guardarTicketEnSheets({
-          qr_code, nombre, email,
-          codigo_artista: codigo_artista || 'N/A',
-          fecha, monto
-        });
-
-        // Mandar email con QR
-        await emailjs.send('service_9firke7', 'template_6rnlvlg', {
-          email, nombre, qr_code,
-          codigo_artista: codigo_artista || 'N/A',
-          fecha
-        });
-
-        // Mostrar confirmación
+        const zona = zonaInfo[zonaActual];
+        await guardarTicketEnSheets({ qr_code, nombre, email, codigo_artista: codigo_artista || 'N/A', fecha, monto: `${zona.precioQ} / $${precioUSD} USD`, zona: zona.label });
+        await emailjs.send('service_9firke7', 'template_6rnlvlg', { email, nombre, qr_code, codigo_artista: codigo_artista || 'N/A', fecha });
         mostrarConfirmacion(nombre, email, qr_code);
-
       } catch(err) {
-        console.error('Error procesando pago:', err);
+        console.error('Error:', err);
         const qr_code = generarCodigoQR();
-        const email = document.getElementById('emailFan').value.trim();
-        const nombre = document.getElementById('nombreFan').value.trim();
-        const qr_image = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${qr_code}&bgcolor=060608&color=FFE500`;
-        mostrarConfirmacion(nombre, email, qr_code);
+        mostrarConfirmacion(document.getElementById('nombreFan').value.trim(), document.getElementById('emailFan').value.trim(), qr_code);
       }
     },
-
-    // Error
-    onError: function(err) {
-      console.error('Error PayPal:', err);
-      pagoProcesado = false;
-      document.getElementById('paypal-button-container').style.display = 'block';
-      document.getElementById('paypal-processing').style.display = 'none';
-      alert('Hubo un error procesando el pago. Por favor intenta de nuevo.');
-    },
-
-    // Usuario canceló
-    onCancel: function() {
-      pagoProcesado = false;
-      document.getElementById('paypal-button-container').style.display = 'block';
-      document.getElementById('paypal-processing').style.display = 'none';
-    }
-
+    onError: function() { pagoProcesado = false; document.getElementById('paypal-button-container').style.display = 'block'; document.getElementById('paypal-processing').style.display = 'none'; },
+    onCancel: function() { pagoProcesado = false; document.getElementById('paypal-button-container').style.display = 'block'; document.getElementById('paypal-processing').style.display = 'none'; }
   }).render('#paypal-button-container');
 }
-initPayPal();
 
 // ── REVEAL ON SCROLL ──
 const reveals = document.querySelectorAll('.reveal');
