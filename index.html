@@ -1728,7 +1728,7 @@ function renderPayPal(precioUSD, label) {
           pagoProcesado = false;
           document.getElementById('paypal-processing').style.display = 'none';
           document.getElementById('paypal-button-container').style.display = 'block';
-          alert('No pudimos confirmar tu pago con PayPal. Si el cargo se realizó, contáctanos con tu correo de PayPal para resolverlo. Código: ' + (verificacion.error || 'desconocido'));
+          alert('No pudimos confirmar tu pago con PayPal. Si el cargo se realizó, contáctanos con tu correo de PayPal para resolverlo. Código: ' + (verificacion.error || 'desconocido') + (verificacion.detalle ? ('\nDetalle: ' + verificacion.detalle) : ''));
           return;
         }
 
